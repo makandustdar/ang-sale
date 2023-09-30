@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load common %}
+{% block content %}
+    <div class="content-wrapper">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+
+
+        <form action="{% url 'create_order_from_file' %}" enctype="multipart/form-data" method="post" class="mb-4">
+            {% csrf_token %}
+            <div class="form-group mb-3 col-5">
+                <label class="form-label">نام مشتری</label>
+                <select name="customer" id="userSelect" class="select2 form-select">
+                    {% for user in users %}
+                        <option value="{{ user.id }}" {% if order.user.id == user.id %}
+                                selected {% endif %}>
+                            {{ user.profile.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-5 mb-3">
+                <input type="file" class="form-control" name="upload" accept=".txt">
+            </div>
+            <input type="submit" value="آپلود" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock %}

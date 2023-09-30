@@ -1,0 +1,98 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست مشخصات محصول{% endblock title %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item active">لیست محصولات</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+            <div class="row mt-3 g-4" id="productDetailDiv">
+                <div class="col-xl-2 col-lg-6 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h6 class="fw-normal mb-0">{{ role.user_set.all|length }}</h6>
+                                <span class="badge rounded-pill bg-label-success" style="line-height: 1.2;">فعال</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div class="role-heading">
+                                    <h4 class="mb-1" style="font-size: 1rem;">رنگ</h4>
+                                    <a href="{% url 'color_list' %}">
+                                        <small>ویرایش مشخصه</small>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% for feature in features %}
+                    <div class="col-xl-2 col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <h6 class="fw-normal mb-0">{{ feature.featurevalue_set.count }}</h6>
+                                    {% if feature.isActive %}
+                                        <span class="badge rounded-pill bg-label-success"
+                                              style="line-height: 1.2;">فعال</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-label-danger" style="line-height: 1.2;">غیر فعال</span>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <div class="role-heading">
+                                        <h4 class="mb-1" style="font-size: 1rem;">{{ feature.perName }}</h4>
+                                        <a href="{% url 'feature_edit' feature.id %}">
+                                            <small>ویرایش مشخصه</small>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="card h-100">
+                        <div class="row h-100">
+                            <div class="col-sm-5">
+                                <div class="d-flex align-items-end h-100 justify-content-center mt-sm-0 mt-3">
+                                    <img src="{% static 'admin/img/illustrations/lady-with-laptop-light.png' %}"
+                                         class="img-fluid" alt="Image" width="100"
+                                         data-app-light-img="illustrations/lady-with-laptop-light.png"
+                                         data-app-dark-img="illustrations/lady-with-laptop-dark.png">
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="card-body text-sm-end text-center ps-sm-0">
+                                    <a href="{% url 'feature_add' %}" class="btn btn-primary mb-3 add-new-role">
+                                        افزودن مشخصه
+                                    </a>
+                                    <p class="mb-0">اگر مشخصه ای وجود ندارد اضافه کنید</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

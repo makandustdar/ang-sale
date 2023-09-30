@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load jalali_tags %}
+
+{% block content %}
+    <div class="col-12 mb-md-0 mb-4">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">
+                    <button type="button" class="btn close" data-dismiss="alert" aria-label="بستن">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="btn close" data-dismiss="alert" aria-label="بستن">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="card invoice-preview-card">
+            <div class="card-body">
+                <div
+                        class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
+                    <div class="mb-xl-0 mb-4">
+                        <div class="d-flex align-items-center svg-illustration mb-3 gap-2">
+                            <span class="app-brand-text h3 mb-0 fw-bold">{{ clue.title }}</span>
+                        </div>
+                        <a href="{% url 'edit_clue' clue.id %}">
+
+                            <button class="mb-0 btn btn-secondary p-2">
+                                ویرایش
+                            </button>
+                        </a>
+
+                    </div>
+                    <div>
+                        <h4>وضعیت : {{ clue.status }}</h4>
+                        <div class="mb-2 lh-1-85">
+                            <span class="me-1">تاریخ ثبت:</span>
+                            <span class="fw-semibold">{{ clue.created_at|to_jalali:'%y/%m/%d %H:%M:%S' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-0">
+            <div class="card-body">
+                <div class="row p-sm-3 p-0">
+                    <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
+                        <p class="mb-1">
+                            نام و نام خانوادگی :
+                            <b>{{ clue.first_name }} {{ clue.last_name }}</b>
+                        </p>
+                        <p class="mb-1">
+                            نام شرکت :
+                            <b>{{ clue.company }}</b>
+                        </p>
+                        <p class="mb-1">
+                            آدرس :
+                            <b>{{ clue.address }}</b>
+                        </p>
+                        <p class="mb-1">
+                            شماره تماس :
+                            <b>{{ clue.phone }}</b>
+                        </p>
+                        <p class="mb-1">
+                            شماره موبایل :
+                            <b>{{ clue.mobile }}</b>
+                        </p>
+                        <p class="mb-1">
+                            سمت :
+                            <b>{{ clue.role }}</b>
+                        </p>
+                        <p class="mb-1">
+                            ایمیل :
+                            <b>{{ clue.email }}</b>
+                        </p>
+                        <p class="mb-1">
+                            وب سایت :
+                            <b>{{ clue.website }}</b>
+                        </p>
+                        <p class="mb-1">
+                            زمینه فعالیت :
+                            <b>{{ clue.company_activity_area }}</b>
+                        </p>
+                        <p class="mb-1">
+                            تعداد پرسنل :
+                            <b>{{ clue.staff_count }}</b>
+                        </p>
+                        <p class="mb-1">
+                            منبع :
+                            <b>{{ clue.source }}</b>
+                        </p>
+                        <p class="mb-1">
+                            رتبه :
+                            <b>{{ clue.get_rate_display }}</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

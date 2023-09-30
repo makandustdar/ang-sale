@@ -1,0 +1,221 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}ایجاد کارشناس{% endblock title %}
+
+{% block content %}
+<style>
+    label {
+        font-size: 0.75rem;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'expert_list' %}">لیست کارشناسان</a>
+                </li>
+                <li class="breadcrumb-item active">افزودن کارشناس</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card-body">
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+        {% endfor %}
+
+        <form class="form-horizontal error" method="post" autocomplete="off">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <label class="form-label">نام*</label>
+                    <input type="text" class="form-control" name="fname" required>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label class="form-label">نام خانوادگی*</label>
+                    <input type="text" class="form-control" name="lname" required>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label class="form-label">نام کاربری*</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-md-6 mb-2">{{ form.mobile|as_crispy_field }}</div>
+                <div class="col-md-6 mb-2">{{ form.id_code|as_crispy_field }}</div>
+                <div class="col-md-6 mb-2 form-group mt-1">
+                    <div class="form-password-toggle">
+                        <label class="form-label" for="basic-default-password32">رمز عبور</label>
+                        <div class="input-group input-group-merge">
+                            <input type="password" name="password" itemid="password" class="form-control text-start"
+                                dir="ltr" id="basic-default-password32" placeholder="············"
+                                aria-describedby="basic-default-password">
+                            <span class="input-group-text cursor-pointer" id="basic-default-password">
+                                <i class="bx bx-hide"></i></span>
+                        </div>
+                    </div>
+                    <button type="button" id="generate_password" class="btn btn-sm btn-label-success mt-2">تولید رمز
+                        عبور</button>
+                </div>
+                <div class="col-md-6 mb-2">
+
+                    <div class="form-check" style="margin-top: 2.2rem;">
+                        <input class="form-check-input" type="checkbox" name="send_password" id="defaultCheck3"
+                            checked="">
+                        <label class="form-check-label" for="defaultCheck3">ارسال رمز عبور به شماره موبایل</label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <!-- Permission table -->
+                    <div class="table-responsive">
+                        <table class="table table-flush-spacing">
+                            <tbody>
+                                <tr>
+                                    <td class="text-nowrap">
+                                        دسترسی مدیریت
+                                        <i class="bx bx-info-circle bx-xs" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" title="دسترسی کامل به سیستم را اجازه می‌دهد"></i>
+                                    </td>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                            <label class="form-check-label" for="selectAll"> انتخاب همه </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-nowrap">مدیریت محصولات</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" id="userManagementRead"
+                                                    name="permission" value="view_product">
+                                                <label class="form-check-label" for="userManagementRead"> مشاهده
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="change_product" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ویرایش
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="add_product" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ایجاد
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-nowrap">مدیریت سفارشات</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" id="userManagementRead"
+                                                    name="permission" value="view_order">
+                                                <label class="form-check-label" for="userManagementRead"> مشاهده
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="change_order" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ویرایش
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="add_order" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ایجاد
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-nowrap">مدیریت مشتریان</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" id="userManagementRead"
+                                                    name="permission" value="view_user">
+                                                <label class="form-check-label" for="userManagementRead"> مشاهده
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="change_user" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ویرایش
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="add_user" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ایجاد
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-nowrap">مدیریت کارشناسان</td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" id="userManagementRead"
+                                                    name="permission" value="view_expert">
+                                                <label class="form-check-label" for="userManagementRead"> مشاهده
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0 me-3 me-lg-5">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="change_expert" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ویرایش
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-0">
+                                                <input class="form-check-input" type="checkbox" name="permission"
+                                                    value="add_expert" id="userManagementCreate">
+                                                <label class="form-check-label" for="userManagementCreate"> ایجاد
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Permission table -->
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12" style="text-align: left;">
+                    <button type="submit" name="private" class="btn btn-label-primary mt-1">ثبت</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('generate_password').addEventListener('click', function () {
+        password = Math.random().toString(36).slice(-10);
+        document.getElementById('basic-default-password32').value = password
+    })
+</script>
+{% endblock content %}

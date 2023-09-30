@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست سرنخ ها{% endblock title %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item active">لیست سرنخ ها</li>
+                </ol>
+            </nav>
+            {% if clues %}
+                <a href="{% url 'add_clue' %}">
+                    <button class="btn btn-success ">افزودن</button>
+                </a>
+            {% endif %}
+        </div>
+
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+
+        {% if clues %}
+            <div class="table-responsive text-nowrap">
+                <table class="table text-center">
+                    <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>موضوع</th>
+                        <th>نام و نام خانوادگی</th>
+                        <th>نام شرکت</th>
+                        <th>شماره تلفن</th>
+                        <th>رتبه</th>
+                        <th>تاریخ ثبت</th>
+                        <th>جزئیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for clue in clues %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ clue.title }}</td>
+                            <td>{{ clue.first_name }} {{ clue.last_name }}</td>
+                            <td>{{ clue.company }}</td>
+                            <td>{{ clue.phone }}</td>
+                            <td>
+                                <span class="badge
+                                        {% if clue.rate == 'C' %} bg-label-primary
+                                        {% elif clue.rate == 'W' %}bg-label-warning
+                                        {% else %} bg-label-danger{% endif %}">
+                                    {{ clue.get_rate_display }}
+                                </span>
+                            </td>
+                            <td>{{ clue.created_at|to_jalali:'%y/%m/%d %H:%M:%S' }}</td>
+                            <td>
+                                <a href="{{ clue.get_absolute_url }}">
+                                    <button class="btn p-1">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pagination justify-content-center">
+                    {% if is_paginated %}
+                        <div class="card-footer">
+                            <div style="text-align: center;">
+
+                                {% if page_obj.has_previous %}
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="1">اولین
+                                        صفحه</a>
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <a class="btn btn-primary btn-sm  paging" href="#"
+                                           data-num="{{ num }}">{{ num }}</a>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                           data-num="{{ num }}">{{ num }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ page_obj.paginator.num_pages }}">
+                                        آخرین صفحه</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="alert text-center">
+                <img src="{% static 'img/illustrations/boy-deal-review-light.png' %}" alt=""
+                     style="max-width:20%; width:20%">
+                <p class="text-mute">داده ای وجود ندارد.</p>
+                <a href="{% url 'add_clue' %}" class="btn btn-label-primary">ثبت سرنخ جدید</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

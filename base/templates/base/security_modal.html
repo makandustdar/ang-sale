@@ -1,0 +1,33 @@
+<!-- Edit User Modal -->
+<div class="modal fade" id="securityEdit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-simple modal-edit-user w-25">
+        <div class="modal-content p-3 p-md-5">
+            <div class="modal-body">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="text-center mb-4">
+                    <h3 class="secondary-font">تغییر رمز عبور</h3>
+                </div>
+                <form id="securityEditForm" class="g-3" action="{% url 'change_user_password' %}" method="post">
+                    {% csrf_token %}
+                    <div class="col-md-12">
+                        <label class="form-label" for="oldpassword">رمز عبور قدیمی</label>
+                        <input type="password" id="oldpassword" name="oldpassword"
+                               class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="new_password">رمز عبور جدید</label>
+                        <input type="password" id="new_password" name="new_password"
+                               class="form-control">
+                    </div>
+                    <div class=" col-md-12">
+                        <label class="form-label" for="new_password_repeat">تکرار رمز</label>
+                        <input type="password" id="new_password_repeat" name="new_password_repeat"
+                               class="form-control">
+                    </div>
+                    <button class="btn btn-primary col-md-6 m-auto mt-3">ثبت</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ Edit User Modal -->

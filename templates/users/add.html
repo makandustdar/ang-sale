@@ -1,0 +1,239 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}ایجاد مشتری{% endblock title %}
+
+{% block content %}
+    <style>
+        label {
+            font-size: 0.75rem;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'users_list' %}">لیست کاربران</a>
+                    </li>
+                    <li class="breadcrumb-item active">افزودن کاربر</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="row mb-2">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">کاربر</label>
+                    <select class="form-select" name="user_type" id="user_type_select">
+                        <option value="private">حقیقی</option>
+                        <option value="legal">حقوقی</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label">کارشناس</label>
+                    <select class="form-select" name="expert" id="expert_select">
+                        <option value="">لطفا انتخاب کنید</option>
+                        {% for expert in experts %}
+                            <option value="{{ expert.id }}">{{ expert.user.first_name }}
+                                {{ expert.user.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <form class="form-horizontal error" method="post" autocomplete="off" id="privateForm">
+                {% csrf_token %}
+                <input type="hidden" name="expert" class="expert_input">
+                <fieldset>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="form-group">
+                                {{ p_form.fname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-group">
+                                {{ p_form.lname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">شماره همراه</label>
+                            <input type="text" class="form-control" name="mobile" id="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                {{ p_form.id_code|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <!-- Datetime Picker-->
+                            <label for="flatpickr-datetime1" class="form-label">تاریخ تولد</label>
+                            <input type="text" class="form-control" placeholder="YYYY/MM/DD" id="flatpickr-datetime1"
+                                   name="birth_date">
+                            <!-- /Datetime Picker-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">استان*</label>
+                            <select name="state" id="id_state" class="form-select state_select" data-id="1" required>
+                                <option value="">--------</option>
+                                {% for state in states %}
+                                    <option value="{{ state.state_id }}">{{ state.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">شهر*</label>
+                            <select name="city" id="id_city_1" class="form-select" required>
+                                <option value="">--------</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">کدپستی</label>
+                            <input type="text" class="form-control" name="zipcode">
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">آدرس</label>
+                            <textarea name="address" class="form-control" cols="30" rows="1"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="submit" name="private" class="btn btn-label-primary mt-1">ثبت</button>
+                    </div>
+                </div>
+            </form>
+
+            <form method="post" autocomplete="off" id="legalForm" style="display: none;">
+                {% csrf_token %}
+                <input type="hidden" name="expert" class="expert_input">
+                <fieldset>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.fname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.lname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">شماره همراه</label>
+                            <input type="text" class="form-control" name="mobile" id="">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <!-- Datetime Picker-->
+                            <label for="flatpickr-datetime2" class="form-label">تاریخ تولد</label>
+                            <input type="text" class="form-control" placeholder="YYYY/MM/DD" id="flatpickr-datetime2"
+                                   name="birth_date">
+                            <!-- /Datetime Picker-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.company_name|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.id_code|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.finance_code|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.phone|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">استان*</label>
+                            <select name="state" id="id_state" class="form-select state_select" data-id="2" required>
+                                <option value="">--------</option>
+                                {% for state in states %}
+                                    <option value="{{ state.state_id }}">{{ state.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">شهر*</label>
+                            <select name="city" id="id_city_2" class="form-select" required>
+                                <option value="">--------</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">کدپستی</label>
+                            <input type="text" class="form-control" name="zipcode">
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">آدرس*</label>
+                            <textarea name="address" class="form-control" cols="30" rows="1">
+                                            </textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="submit" name="legal" class="btn btn-label-primary mt-1">ثبت</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        user_type_select = document.querySelector('#user_type_select')
+        if (user_type_select) {
+            user_type_select.addEventListener('change', function () {
+                if (user_type_select.value == 'private') {
+                    document.querySelector('#privateForm').style.display = 'block'
+                    document.querySelector('#legalForm').style.display = 'none'
+                } else if (user_type_select.value == 'legal') {
+                    document.querySelector('#privateForm').style.display = 'none'
+                    document.querySelector('#legalForm').style.display = 'block'
+                }
+            })
+        }
+    </script>
+    <script>
+        expert_select = document.querySelector('#expert_select')
+        if (expert_select) {
+            expert_select.addEventListener('change', function () {
+                document.querySelectorAll('.expert_input').forEach(input => {
+                    input.value = expert_select.value;
+                })
+            })
+        }
+    </script>
+{% endblock content %}

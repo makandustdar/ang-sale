@@ -1,0 +1,82 @@
+{% extends './base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="content-header row">
+    <div class="content-header-left col-12 mb-2 mt-1">
+        <div class="row breadcrumbs-top">
+            <div class="col-12">
+                <h5 class="content-header-title float-left pr-1">ویرایش کاربر</h5>
+                <div class="breadcrumb-wrapper">
+                    <ol class="breadcrumb p-0 mb-0">
+                        <!-- <li class="breadcrumb-item"><a href="{% url 'users_list' %}">مشتریان</a></li> -->
+                        <li class="breadcrumb-item active">ویرایش کاربر</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-body">
+    <div class="card">
+        <div class="card-header">ویرایش کاربر</div>
+        <div class="card-content">
+            <div class="card-body">
+                <div class="card">
+                    <div class="card-content">
+                        {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert bg-rgba-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="بستن">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                        {% else %}
+                        <div class="alert bg-rgba-{{ message.tags }} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="بستن">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        <div class="card-body">
+                            <form class="form-horizontal error" method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        {{ form.fname|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ form.lname|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ form.id_code|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.mobile|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.phone|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {{ form.address|as_crispy_field }}
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-light-success mt-1">ویرایش</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

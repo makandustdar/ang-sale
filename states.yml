@@ -1,0 +1,155 @@
+- model: users.state
+  pk: 1
+  fields:
+    name: تهران
+    state_id: '9'
+- model: users.state
+  pk: 2
+  fields:
+    name: اصفهان
+    state_id: '5'
+- model: users.state
+  pk: 3
+  fields:
+    name: البرز
+    state_id: '6'
+- model: users.state
+  pk: 4
+  fields:
+    name: خوزستان
+    state_id: '14'
+- model: users.state
+  pk: 5
+  fields:
+    name: مازندران
+    state_id: '28'
+- model: users.state
+  pk: 6
+  fields:
+    name: خراسان رضوی
+    state_id: '12'
+- model: users.state
+  pk: 7
+  fields:
+    name: فارس
+    state_id: '18'
+- model: users.state
+  pk: 8
+  fields:
+    name: گیلان
+    state_id: '26'
+- model: users.state
+  pk: 9
+  fields:
+    name: آذربایجان شرقی
+    state_id: '2'
+- model: users.state
+  pk: 10
+  fields:
+    name: آذربایجان غربی
+    state_id: '3'
+- model: users.state
+  pk: 11
+  fields:
+    name: اردبیل
+    state_id: '4'
+- model: users.state
+  pk: 12
+  fields:
+    name: ایلام
+    state_id: '7'
+- model: users.state
+  pk: 13
+  fields:
+    name: بوشهر
+    state_id: '8'
+- model: users.state
+  pk: 14
+  fields:
+    name: چهارمحال و بختیاری
+    state_id: '10'
+- model: users.state
+  pk: 15
+  fields:
+    name: خراسان جنوبی
+    state_id: '11'
+- model: users.state
+  pk: 16
+  fields:
+    name: خراسان شمالی
+    state_id: '13'
+- model: users.state
+  pk: 17
+  fields:
+    name: زنجان
+    state_id: '15'
+- model: users.state
+  pk: 18
+  fields:
+    name: سمنان
+    state_id: '16'
+- model: users.state
+  pk: 19
+  fields:
+    name: سیستان و بلوچستان
+    state_id: '17'
+- model: users.state
+  pk: 20
+  fields:
+    name: قزوین
+    state_id: '19'
+- model: users.state
+  pk: 21
+  fields:
+    name: قم
+    state_id: '20'
+- model: users.state
+  pk: 22
+  fields:
+    name: کردستان
+    state_id: '21'
+- model: users.state
+  pk: 23
+  fields:
+    name: کرمان
+    state_id: '22'
+- model: users.state
+  pk: 24
+  fields:
+    name: کرمانشاه
+    state_id: '23'
+- model: users.state
+  pk: 25
+  fields:
+    name: کهگیلویه و بویراحمد
+    state_id: '24'
+- model: users.state
+  pk: 26
+  fields:
+    name: گلستان
+    state_id: '25'
+- model: users.state
+  pk: 27
+  fields:
+    name: لرستان
+    state_id: '27'
+- model: users.state
+  pk: 28
+  fields:
+    name: مرکزی
+    state_id: '29'
+- model: users.state
+  pk: 29
+  fields:
+    name: هرمزگان
+    state_id: '30'
+- model: users.state
+  pk: 30
+  fields:
+    name: همدان
+    state_id: '31'
+- model: users.state
+  pk: 31
+  fields:
+    name: یزد
+    state_id: '32'

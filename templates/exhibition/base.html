@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="loading" lang="fa" data-textdirection="rtl" dir="rtl">
+<!-- BEGIN: Head-->
+
+<head>
+    {% load static %}
+    {% load jalali_tags %}
+    {% load crispy_forms_tags %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>پنل مدیریت - {% block title %}{% endblock title %}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/ico/favicon.ico' %}">
+    <meta name="theme-color" content="#5A8DEE">
+
+    <!-- BEGIN: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/vendors.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/charts/apexcharts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/extensions/swiper.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/forms/select/select2.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/extensions/dragula.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/extensions/sweetalert2.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/pickers/pickadate/pickadate.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/pickers/daterange/daterangepicker.css' %}">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'vendors/css/tables/datatable/datatables.min.csss' %}"> -->
+    <link rel="stylesheet" type="text/css"
+        href="{% static 'vendors/css/forms/spinner/jquery.bootstrap-touchspin.css' %}">
+    <link rel="stylesheet" type="text/css"
+        href="{% static 'vendors/css/pickers/datepicker-jalali/bootstrap-datepicker.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/plugins/forms/wizard.css' %}">
+    <!-- END: Vendor CSS-->
+
+    <!-- BEGIN: Theme CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-extended.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/colors.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/themes/dark-layout.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/themes/semi-dark-layout.css' %}">
+    <!-- END: Theme CSS-->
+
+    <!-- BEGIN: Page CSS-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/core/menu/menu-types/vertical-menu.css' %}">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/pages/dashboard-ecommerce.css' %}"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'assets/css/pages/dashboard-analytics.css' %}"> -->
+    <!-- END: Page CSS-->
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
+    <script type="text/javascript">
+        var user = '{{ request.user }}'
+
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getToken('csrftoken');
+    </script>
+
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-menu-modern 2-columns  navbar-sticky footer-static" data-open="click"
+    data-menu="vertical-menu-modern" data-col="2-columns">
+
+    <!-- BEGIN: Header-->
+    <div class="header-navbar-shadow"></div>
+    <nav class="header-navbar main-header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top">
+        <div class="navbar-wrapper">
+            <div class="navbar-container content">
+                <div class="navbar-collapse" id="navbar-mobile">
+                    <div class="mr-auto float-left bookmark-wrapper d-flex align-items-center">
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item mobile-menu d-xl-none mr-auto">
+                                <a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#">
+                                    <i class="ficon bx bx-menu"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- END: Header-->
+
+
+    <!-- BEGIN: Main Menu-->
+    <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
+        <div class="navbar-header">
+            <ul class="nav navbar-nav flex-row">
+                <li class="nav-item mr-auto">
+                    <a class="navbar-brand" {% if request.user.is_staff %} href="/admin/" {% else %} href="/"
+                        {% endif %}>
+                        <div class="brand-logo"><img class="logo" src="{% static 'images/logo/logo.png' %}"></div>
+                        <h2 class="brand-text mb-0">پنل مدیریت</h2>
+                    </a>
+                </li>
+                <li class="nav-item nav-toggle">
+                    <a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse">
+                        <i class="bx bx-x d-block d-xl-none font-medium-4 primary"></i>
+                        <i class="toggle-icon bx bx-disc font-medium-4 d-none d-xl-block primary"
+                            data-ticon="bx-disc"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="shadow-bottom"></div>
+        <div class="main-menu-content">
+            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
+                data-icon-style="lines">
+                <li class="nav-item {% if 'exhibition_add' in request.resolver_match.url_name %} active {% endif %}">
+                    <a href="{% url 'exhibition_add' %}">
+                        <i class="menu-livicon" data-icon="desktop"></i>
+                        <span class="menu-title" data-i18n="Dashboard">ثبت کاربر جدید</span>
+                    </a>
+                </li>
+                <li class="nav-item {% if 'exhibition_list' in request.resolver_match.url_name %} active {% endif %}">
+                    <a href="{% url 'exhibition_list' %}">
+                        <i class="menu-livicon" data-icon="desktop"></i>
+                        <span class="menu-title" data-i18n="Dashboard">لیست کاربران</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END: Main Menu-->
+
+    <!-- BEGIN: Content-->
+    <div class="app-content content">
+        <div class="content-overlay"></div>
+        <div class="content-wrapper">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+    <!-- END: Content-->
+
+
+    <div class="sidenav-overlay"></div>
+    <div class="drag-target"></div>
+
+    <!-- BEGIN: Footer-->
+    <footer class="footer footer-static footer-light">
+        <p class="clearfix mb-0">
+            <span class="float-left d-inline-block">تمامی حقوق مادی و معنوی این سایت محفوظ است
+            </span>
+        </p>
+    </footer>
+    <!-- END: Footer-->
+
+
+    <!-- BEGIN: Vendor JS-->
+    <script src="{% static 'vendors/js/vendors.min.js' %}"></script>
+    <script src="{% static 'fonts/LivIconsEvo/js/LivIconsEvo.tools.min.js' %}"></script>
+    <script src="{% static 'fonts/LivIconsEvo/js/LivIconsEvo.defaults.js' %}"></script>
+    <script src="{% static 'fonts/LivIconsEvo/js/LivIconsEvo.min.js' %}"></script>
+    <!-- BEGIN Vendor JS-->
+
+    <script src="{% static 'vendors/js/forms/spinner/jquery.bootstrap-touchspin.js' %}"></script>
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{% static 'vendors/js/extensions/jquery.steps.min.js' %}"></script>
+    <script src="{% static 'vendors/js/forms/validation/jquery.validate.min.js' %}"></script>
+    <!-- <script src="{% static 'vendors/js/charts/apexcharts.min.js' %}"></script> -->
+    <script src="{% static 'vendors/js/extensions/swiper.min.js' %}"></script>
+    <script src="{% static 'vendors/js/forms/select/select2.full.min.js' %}"></script>
+    <script src="{% static 'vendors/js/forms/repeater/jquery.repeater.min.js' %}"></script>
+    <script src="{% static 'vendors/js/extensions/dragula.min.js' %}"></script>
+    <script src="{% static 'vendors/js/extensions/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'vendors/js/extensions/polyfill.min.js' %}"></script>
+    <script src="{% static 'vendors/js/pickers/pickadate/picker.js' %}"></script>
+    <script src="{% static 'vendors/js/pickers/pickadate/picker.date.js' %}"></script>
+    <!-- <script src="{% static 'vendors/js/pickers/datepicker-jalali/bootstrap-datepicker.min.js' %}"></script> -->
+    <!-- <script src="{% static 'vendors/js/pickers/datepicker-jalali/bootstrap-datepicker.fa.min.js' %}"></script> -->
+    <!-- END: Page Vendor JS-->
+
+    <!-- BEGIN: Theme JS-->
+    <script src="{% static 'js/scripts/configs/vertical-menu-light.js' %}"></script>
+    <script src="{% static 'js/core/app-menu.js' %}"></script>
+    <script src="{% static 'js/core/app.js' %}"></script>
+    <script src="{% static 'js/scripts/components.js' %}"></script>
+    <script src="{% static 'js/scripts/footer.js' %}"></script>
+    <script src="{% static 'js/scripts/customizer.js' %}"></script>
+    <!-- END: Theme JS-->
+
+    <!-- BEGIN: Page JS-->
+    <script src="{% static 'js/scripts/forms/wizard-steps.js' %}"></script>
+    <!-- <script src="{% static 'js/scripts/pages/dashboard-ecommerce.js' %}"></script> -->
+    <script src="{% static 'js/scripts/pages/dashboard-analytics.js' %}"></script>
+    <script src="{% static 'js/scripts/forms/select/form-select2.js' %}"></script>
+    <script src="{% static 'js/scripts/forms/form-repeater.js' %}"></script>
+    <script src="{% static 'js/scripts/modal/components-modal.js' %}"></script>
+    <script src="{% static 'js/scripts/forms/number-input.js' %}"></script>
+    <!-- END: Page JS-->
+
+    <script src="{% static 'js/ajax.js' %}"></script>
+    <script src="{% static 'js/alert.js' %}"></script>
+    <script src="{% static 'js/paginate.js' %}"></script>
+    <script src="{% static 'js/scripts/extensions/sweet-alerts.js' %}"></script>
+    <script src="{% static 'js/scripts/pickers/dateTime/pick-a-datetime.js' %}"></script>
+
+</body>
+<!-- END: Body-->
+
+</html>

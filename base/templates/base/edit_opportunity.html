@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load jalali_tags %}
+
+{% block content %}
+    <div class="col-12 mb-md-0 mb-4">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">
+                    <button type="button" class="btn close" data-dismiss="alert" aria-label="بستن">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="btn close" data-dismiss="alert" aria-label="بستن">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="card invoice-preview-card">
+            <div class="card-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">موضوع:</label>
+                                {{ form.title }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">حساب:</label>
+                                {{ form.account }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">تاریخ فروش:</label>
+                                {{ form.sell_date }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">احتمال فروش:</label>
+                                {{ form.sell_probability }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">کارشناس:</label>
+                                {{ form.expert }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">مبلغ کل:</label>
+                                {{ form.total_price }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">منبع:</label>
+                                {{ form.source }}
+                            </div>
+                        </div>
+                        <span class="col-md-6"></span>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">قدم بعدی:</label>
+                                {{ form.next_step }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                <label for="">توضیحات:</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" value="ذخیره" class="btn btn-label-success mt-3">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

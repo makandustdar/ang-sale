@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fa" class="light-style" dir="rtl" data-theme="theme-default" data-assets-path="/static/"
+      data-template="vertical-menu-template">
+
+<head>
+    {% load static %}
+    {% load jalali_tags %}
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>صورتحساب (نسخه چاپی)</title>
+
+    <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/logo.jpeg' %}">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/fonts/boxicons.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/fonts/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/fonts/flag-icons.css' %}">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'vendor/css/rtl/core.css' %}" class="template-customizer-core-css">
+    <link rel="stylesheet" href="{% static 'vendor/css/rtl/theme-default.css' %}" class="template-customizer-theme-css">
+    <link rel="stylesheet" href="{% static 'css/demo.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/rtl/rtl.css' %}">
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static 'vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/libs/typeahead-js/typeahead.css' %}">
+
+    <!-- Page CSS -->
+
+    <link rel="stylesheet" href="{% static 'vendor/css/pages/app-invoice-print.css' %}">
+
+    <!-- Helpers -->
+    <script src="{% static 'vendor/js/helpers.js' %}"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="{% static 'vendor/js/template-customizer.js' %}"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static 'js/config.js' %}"></script>
+</head>
+
+<body>
+<!-- Content -->
+
+<div class="invoice-print p-5">
+    <div class="d-flex justify-content-between flex-row">
+        <div class="mb-4">
+            <div class="d-flex align-items-center svg-illustration mb-3 gap-2">
+                <span class="app-brand-text h3 mb-0 fw-bold">گروه صنعتی ANG</span>
+            </div>
+            <p class="mb-1">تهران سهروردی شمالی</p>
+            <p class="mb-0"><span class="d-inline-block" dir="ltr">02186120021</span>
+            <p class="mb-1">قم ، شهرک صنعتی شکوهیه</p>
+            <p class="mb-0"><span class="d-inline-block" dir="ltr">02533346088</span>
+        </div>
+        <div>
+            <h4>شماره سفارش : {{ order.transId }}#</h4>
+            <div class="mb-2 lh-1-85">
+                <span class="me-1">تاریخ صدور:</span>
+                <span class="fw-semibold">{{ order.createdAt|to_jalali:'%y/%m/%d' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row d-flex justify-content-between mb-4">
+        <div class="col-sm-6 w-50">
+            <p class="mb-1">
+                نام و نام خانوادگی :
+                <b>{{ order.user.profile.get_full_name }}</b>
+            </p>
+            {% if order.user.profile.role == '2' %}
+                <p class="mb-1">
+                    نام شرکت :
+                    <b>{{ order.user.profile.legal.company_name }}</b>
+                </p>
+            {% endif %}
+            <p class="mb-1">
+                آدرس :
+                <b>{{ order.user.profile.state.name }}.{{ order.user.profile.city.name }}.{{ order.user.profile.address }}</b>
+            </p>
+            <p class="mb-1">
+                شماره تماس :
+                <b>{{ order.user.profile.mobile }}</b>
+            </p>
+        </div>
+        <!-- <div class="col-sm-6 w-50">
+            <h6>قبض به:</h6>
+            <table class="lh-2">
+                <tbody>
+                    <tr>
+                        <td class="pe-3">مجموع سررسید:</td>
+                        <td>12,000,000 تومان</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-3">نام بانک:</td>
+                        <td>بانک آمریکا</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-3">کشور:</td>
+                        <td>ایالات متحده</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-3">IBAN:</td>
+                        <td>ETD95476213874685</td>
+                    </tr>
+                    <tr>
+                        <td class="pe-3">کد SWIFT:</td>
+                        <td>BR91905</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> -->
+    </div>
+
+    <hr class="my-0">
+
+    {% regroup items by productName as product_list %}
+    {% for productName in product_list %}
+        <div class="table-reponsive text-nowrap">
+            <table class="table">
+                <h5 class="card-header">{{ productName.grouper }}</h5>
+                <tbody>
+                {% for item in productName.list %}
+                    <tr>
+                        <th>کد محصول : {{ item.code }}</th>
+                        {% if item.color %}
+                            <th>رنگ : {{ item.colorName }}</th>
+                        {% endif %}
+                        {% for i in item.orderitemdetail_set.all|dictsort:'id' %}
+                            <th>
+                                {{ i.featureName }} : {{ i.featureValueName }}
+                            </th>
+                        {% endfor %}
+                        <th>تعداد : {{ item.quantity }}</th>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- / Content -->
+
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
+<script src="{% static 'vendor/libs/jquery/jquery.js' %}"></script>
+<script src="{% static 'vendor/libs/popper/popper.js' %}"></script>
+<script src="{% static 'vendor/js/bootstrap.js' %}"></script>
+<script src="{% static 'vendor/libs/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+
+<script src="{% static 'vendor/libs/hammer/hammer.js' %}"></script>
+
+<script src="{% static 'vendor/libs/i18n/i18n.js' %}"></script>
+<script src="{% static 'vendor/libs/typeahead-js/typeahead.js' %}"></script>
+
+<script src="{% static 'vendor/js/menu.js' %}"></script>
+<!-- endbuild -->
+
+<!-- Vendors JS -->
+
+<!-- Main JS -->
+<script src="{% static 'js/main.js' %}"></script>
+
+<!-- Page JS -->
+<script src="{% static 'js/app-invoice-print.js' %}"></script>
+</body>
+
+</html>

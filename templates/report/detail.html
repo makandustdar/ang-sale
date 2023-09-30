@@ -1,0 +1,112 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}ثبت شکایت{% endblock title %}
+
+{% block content %}
+<div class="row invoice-preview">
+    <!-- Invoice -->
+    <div class="col-12 mb-md-0 mb-4">
+        <div class="card invoice-preview-card">
+            <div class="card-body">
+                <div
+                    class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
+                    <div class="mb-xl-0 mb-4">
+                        <div class="d-flex align-items-center svg-illustration mb-3 gap-2">
+                            <span class="app-brand-text h3 mb-0 fw-bold">گروه صنعتی ANG</span>
+                        </div>
+                        <p class="mb-1">{{ report.order.user.profile.get_full_name }}</p>
+                        <p class="mb-1">
+                            {{ report.order.user.profile.state.name }}.{{ report.order.user.profile.city.name }}.{{ report.order.user.profile.address }}
+                        </p>
+                        <p class="mb-0">
+                            <span class="d-inline-block" dir="ltr">{{ report.order.user.profile.mobile }}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <h4>شماره سفارش : {{ report.order.transId }}#</h4>
+                        <div class="mb-2 lh-1-85">
+                            <span class="me-1">تاریخ صدور سفارش :</span>
+                            <span class="fw-semibold">{{ report.order.createdAt|to_jalali:'%y/%m/%d' }}</span>
+                        </div>
+                        <div class="mb-2 lh-1-85">
+                            <span class="me-1">تاریخ ثبت شکایت :</span>
+                            <span class="fw-semibold">{{ report.create_date|to_jalali:'%y/%m/%d' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-0">
+
+
+            <div class="table-reponsive text-nowrap">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th>تعداد معیوب</th>
+                            <th>مشکل کیفی</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in report.damagedproduct_set.all %}
+                        <tr>
+                            <td>
+                                {% for item in report.order.orderitem_set.all %}
+                                {% if item.id == product.orderitem.id %}
+                                {{ item.productName }} ->
+                                {% for i in item.orderitemdetail_set.all %}
+                                {{ i.featureName }} : {{ i.featureValueName }} /
+                                {% endfor %}
+                                تعداد : {{ item.quantity }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ product.problem_count }}</td>
+                            <td>{{ product.quality_problem }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <hr class="my-0">
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">خواسته مشتری</label>
+                        <div>
+                            <p>{{ report.customer_request }}</p>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">نظر مدیر کارخانه</label>
+                        <div>
+                            <p>{{ report.manager_decision }}</p>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 mt-1">
+                        <label class="form-label">تصمیم نهایی</label>
+                        <div>
+                            <p>{{ report.final_decision }}</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="submit" name="profile" class="btn btn-label-primary mt-1">ثبت</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

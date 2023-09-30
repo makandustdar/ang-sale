@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}افزودن سرنخ{% endblock title %}
+
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'clue_list' %}">لیست سرنخ ها</a>
+                    </li>
+                    <li class="breadcrumb-item active">افزودن سرنخ</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">موضوع:</label>
+                            {{ form.title }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">کارشناس:</label>
+                            {{ form.expert }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">نام:</label>
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">نام خانوادگی:</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">نام شرکت:</label>
+                            {{ form.company }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">سمت:</label>
+                            {{ form.role }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">شماره تماس:</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">شماره موبایل:</label>
+                            {{ form.mobile }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">ایمیل:</label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">وب سایت:</label>
+                            {{ form.website }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">زمینه فعالیت شرکت:</label>
+                            {{ form.company_activity_area }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">تعداد پرسنل:</label>
+                            {{ form.staff_count }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">نوع آشنایی:</label>
+                            {{ form.source }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">رتبه:</label>
+                            {{ form.rate }}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="form-group">
+                            <label for="">وضعیت:</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mb-2">
+                        <div class="form-group">
+                            <label for="">آدرس:</label>
+                            {{ form.address }}
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" value="افزودن" class="btn btn-label-success">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

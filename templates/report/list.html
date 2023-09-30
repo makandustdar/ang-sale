@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست شکایات{% endblock title %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item active">لیست شکایات</li>
+            </ol>
+        </nav>
+    </div>
+
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% else %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+
+    {% if reports %}
+    <div class="table-responsive text-nowrap">
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>شماره سفارش</th>
+                    <th>نام سفارش دهنده</th>
+                    <th>وضعیت سفارش</th>
+                    <th>تاریخ ایجاد سفارش</th>
+                    <th>تاریخ ثبت شکایت</th>
+                    <th>جزئیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                    <td><span class="badge bg-label-success">{{ report.order.transId }}</span>
+                    </td>
+                    <td>{{ report.order.user.profile.get_full_name }}</td>
+                    <td> <span class="badge bg-label-warning">{{ report.order.get_track }}</span></td>
+                    <td>{{ report.order.createdAt|to_jalali:'%y/%m/%d' }}</td>
+                    <td>{{ report.create_date|to_jalali:'%y/%m/%d' }}</td>
+                    <td>
+                        <a href="{% url 'report_detail' report.id %}">
+                            <i class="badge-circle badge-circle-label-primary bx bx-show font-medium-1"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination justify-content-center">
+            {% if is_paginated %}
+            <div class="card-footer">
+                <div style="text-align: center;">
+
+                    {% if page_obj.has_previous %}
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="1">اولین صفحه</a>
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                        data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <a class="btn btn-primary btn-sm  paging" href="#" data-num="{{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="{{ num }}">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                        data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                        data-num="{{ page_obj.paginator.num_pages }}">
+                        آخرین صفحه</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert text-center">
+        <img src="{% static 'img/illustrations/boy-deal-review-light.png' %}" alt="" style="max-width:20%; width:20%">
+        <p class="text-mute">داده ای وجود ندارد.</p>
+        <a href="{% url 'admin_order_list' %}" class="btn btn-label-primary">ثبت شکایت</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}جزئیات سفارش{% endblock title %}
+
+{% block content %}
+
+    <style>
+        .order-product-list {
+            display: flex;
+            list-style: none;
+            padding-bottom: 15px;
+        }
+
+        .order-product-list:not(:last-child) {
+            border-bottom: 1px solid #d4d8dd;
+        }
+
+        .order-product-list li {
+            margin-left: 1rem;
+        }
+    </style>
+
+    {% for message in messages %}
+        <script>
+            alert("{{ message }}")
+        </script>
+    {% endfor %}
+
+    <div class="row invoice-edit">
+        <!-- Invoice Edit-->
+        <div class="col-12 mb-lg-0 mb-4">
+            <div class="card invoice-preview-card">
+                <div class="card-body">
+                    <form action="{% url 'order_edit' order.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="row p-sm-3 p-0">
+                            <div class="col-md-6 mb-md-0 mb-4">
+                                <div class="mb-xl-0 mb-4">
+                                    <div class="d-flex align-items-center svg-illustration mb-3 gap-2">
+                                        <span class="app-brand-text h3 mb-0 fw-bold">گروه صنعتی ANG</span>
+                                    </div>
+                                    <p class="mb-1">تهران سهروردی شمالی</p>
+                                    <p class="mb-0"><span class="d-inline-block" dir="ltr">02186120021</span>
+                                    <p class="mb-1">قم ، شهرک صنعتی شکوهیه</p>
+                                    <p class="mb-0"><span class="d-inline-block" dir="ltr">02533346088</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <dl class="row mb-2">
+                                    <dt class="col-sm-6 mb-2 mb-sm-0 text-md-end">
+                                        <span class="h4 text-capitalize mb-0 text-nowrap">شماره صورتحساب</span>
+                                    </dt>
+                                    <dd class="col-sm-6 d-flex justify-content-md-end">
+                                        <div class="w-px-150">
+                                            <input type="text" class="form-control" name="transId" placeholder="#"
+                                                   value="{{ order.transId }}" id="invoiceId">
+                                        </div>
+                                    </dd>
+                                    <dt class="col-sm-6 mb-2 mb-sm-0 pt-1 text-md-end">
+                                        <span class="fw-normal">تاریخ صدور:</span>
+                                    </dt>
+                                    <dd class="col-sm-6 d-flex justify-content-md-end">
+                                        <div class="w-px-150">
+                                            <input type="text" class="form-control" name="order_date"
+                                                   value="{{ order.order_date|date:'Y/m/d' }}"
+                                                   id="flatpickr-datetime2">
+                                        </div>
+                                    </dd>
+
+                                </dl>
+                            </div>
+                        </div>
+                        <hr class="my-4 mx-n4">
+                        <div class="row p-sm-3 p-0">
+                            <div class="col-xl-12 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
+                                <h6 class="pb-2">صورتحساب به:</h6>
+
+                                <select class="select2 form-select" name="customer" id="customerSelect">
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}" {% if order.user.id == user.id %}
+                                                selected {% endif %}>
+                                            {{ user.profile.get_full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if order.user.profile.role == '2' %}
+                                    <p class="mb-1 mt-2">
+                                        نام شرکت :
+                                        <b id="companyName">{{ order.user.profile.legal.company_name }}</b>
+                                    </p>
+                                {% endif %}
+                                <p class="mb-1 mt-2">
+                                    آدرس :
+                                    <b
+                                            id="address">{{ order.user.profile.state.name }}.{{ order.user.profile.city.name }}.{{ order.user.profile.address }}</b>
+                                </p>
+                                <p class="mb-1">
+                                    کدپستی :
+                                    <b id="zipcode">{{ order.user.profile.zipcode }}</b>
+                                </p>
+                                <p class="mb-1">
+                                    شماره تماس :
+                                    <b id="mobileNumber">{{ order.user.profile.mobile }}</b>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12" style="text-align: left;">
+                                <button type="submit" class="btn btn-label-primary">ثبت ویرایش</button>
+                            </div>
+                        </div>
+                    </form>
+                    <hr class="mx-n4">
+
+                    <h5><i class="bx bx-edit-alt"></i> ویرایش محصولات</h5>
+                    {% for item in items %}
+                        <div class="d-flex border rounded position-relative pe-0 mb-3">
+                            <div class="row w-100 m-0 p-3">
+                                <div class="col-md-3 col-12 mb-md-0 mb-3 ps-md-0">
+                                    <label class="form-label">نام محصول</label>
+                                    <select class="form-select item-details">
+                                        <option value="">{{ item.productName }}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 col-12 mb-md-0 mb-0 ps-md-0">
+                                    <label class="form-label">رنگ</label>
+                                    <select class="form-select" id="color_{{ item.id }}">
+                                        {% for i in item.product.productcolor_set.all %}
+                                            <option value="{{ i.color.id }}" {% if i.color.id == item.color.id %}
+                                                    selected
+                                            {% endif %}>
+                                                {{ i.color.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% for i in item.orderitemdetail_set.all|dictsort:'id' %}
+                                    <div class="col-md-3 col-12 mb-md-0 mb-3 ps-md-0">
+                                        <label class="form-label">{{ i.featureName }}</label>
+                                        <select class="form-select featureValueSelect_{{ item.id }}">
+                                            {% for j in item.product.productfeaturevalue_set.all %}
+                                                {% if i.feature.id == j.featurevalue.feature.id %}
+                                                    <option value="{{ i.id }}|{{ j.featurevalue.feature.id }}|{{ j.featurevalue.id }}"
+                                                            {% if i.featureValue.id == j.featurevalue.id %}
+                                                            selected {% endif %}>
+                                                        {{ j.featurevalue.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endfor %}
+                                <div class="col-md-3 col-12 mb-md-0 mb-3 ps-md-0">
+                                    <label class="form-label">تعداد</label>
+                                    <input type="number" class="form-control" name="quantity"
+                                           value="{{ item.quantity }}"
+                                           id="quantity_{{ item.id }}">
+                                </div>
+                                <div class="col-md-3 col-12 mb-md-0 mb-3 ps-md-0">
+                                    <label class="form-label">فی</label>
+                                    <input type="number" class="form-control" name="fee"
+                                           value="{{ item.fee }}"
+                                           id="fee_{{ item.id }}">
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-center justify-content-between border-start p-2">
+                                <div class="badge badge-center bg-label-danger rounded-pill">
+                                    <i class="bx bx-x fs-4 cursor-pointer preOrderDeleteBtn"
+                                       data-id="{{ item.id }}"></i>
+                                </div>
+                                <div class="badge badge-center bg-label-success rounded-pill">
+                                    <i class="bx bx-edit-alt cursor-pointer preOrderEditBtn" data-id="{{ item.id }}"
+                                       role="button">
+                                    </i>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <hr class="my-4">
+
+                    <form class="form-horizontal error" method="post" action="{% url 'admin_order_add' %}">
+                        {% csrf_token %}
+
+                        <input type="hidden" name="orderId" value="{{ order.id }}">
+
+                        <h5><i class="bx bx-plus"></i> افزودن محصول</h5>
+                        <div class="border rounded position-relative pe-0">
+                            <div class="row w-100 m-0 p-3">
+                                <div class="col-12 mb-md-0 mb-3 ps-md-0">
+                                    <label class="form-label">نام محصول</label>
+                                    <select class="form-select item-details productRadioBtn" name="product">
+                                        <option value="">لطفا انتخاب کنید</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}">{{ product.perName }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row w-100 p-3" id="feature_div"></div>
+                            <div class="d-flex p-3">
+                                <div class="btn btn-label-danger me-2">
+                                    <i class="bx bx-x fs-4 cursor-pointer" data-repeater-delete></i>
+                                    حذف
+                                </div>
+                                <button type="submit" class="btn btn-label-primary">
+                                    <i class="bx bx-check cursor-pointer" role="button"></i>
+                                    ثبت
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /Invoice Edit-->
+    </div>
+{% endblock content %}

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load common %}
+{% block content %}
+    <div class="content-wrapper">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+        <form action="" class="mb-4">
+            <div class="row">
+                <div class="col-4">
+                    <input type="text" placeholder="سال" name="year" value="{{ request.GET.year }}"
+                           class="form-control">
+                </div>
+                <div class="col-4">
+                    <select class="form-select" name="month" id="">
+                        <option value="1" {% if request.GET.month == '1' %}selected{% endif %}>فروردین</option>
+                        <option value="2" {% if request.GET.month == '2' %}selected{% endif %}>اردیبهشت</option>
+                        <option value="3" {% if request.GET.month == '3' %}selected{% endif %}>خرداد</option>
+                        <option value="4" {% if request.GET.month == '4' %}selected{% endif %}>تیر</option>
+                        <option value="5" {% if request.GET.month == '5' %}selected{% endif %}>مرداد</option>
+                        <option value="6" {% if request.GET.month == '6' %}selected{% endif %}>شهریور</option>
+                        <option value="7" {% if request.GET.month == '7' %}selected{% endif %}>مهر</option>
+                        <option value="8" {% if request.GET.month == '8' %}selected{% endif %}>آبان</option>
+                        <option value="9" {% if request.GET.month == '9' %}selected{% endif %}>آذر</option>
+                        <option value="10" {% if request.GET.month == '10' %}selected{% endif %}>دی</option>
+                        <option value="11" {% if request.GET.month == '11' %}selected{% endif %}>بهمن</option>
+                        <option value="12" {% if request.GET.month == '12' %}selected{% endif %}>اسفند</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <select class="form-select" name="product" id="">
+                        <option value="" {% if request.GET.product == '' %}selected{% endif %}>تمام محصولات</option>
+                        <option value="1" {% if request.GET.product == '1' %}selected{% endif %}>های گلاس</option>
+                        <option value="2" {% if request.GET.product == '2' %}selected{% endif %}>PSD</option>
+                        <option value="3" {% if request.GET.product == '3' %}selected{% endif %}>PVC</option>
+                        <option value="4" {% if request.GET.product == '4' %}selected{% endif %}>صفحه کابینت</option>
+                    </select>
+                </div>
+            </div>
+            <input type="submit" class="btn btn-label-vimeo mt-4" value="جستجو">
+        </form>
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card ">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar">
+                                    <span class="avatar-initial rounded-circle bg-label-warning"><i
+                                            class="bx bx-dollar fs-4"></i></span>
+                                </div>
+                                <div class="card-info">
+                                    <h5 class="card-title mb-0 me-2 primary-font">{{ total_price }}</h5>
+                                    <small class="text-muted">مبلغ کل سفارشات</small>
+                                </div>
+                            </div>
+                            <div id="incomeChart"></div>
+                        </div>
+                        <br>
+                        {% for product , price in products_price.items %}
+                            <p class="m-0">{{ product }}</p>
+                            <p>{{ price }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-header header-elements">
+                        <h5 class="card-title mb-0">تعداد سفارش محصولات</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="barChart2" class="chartjs" data-quantities="{{ quantity_products }}"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row mb-4">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header header-elements">
+                        <h5 class="card-title mb-0">برترین مشتریان (بر حسب درصد کل سفارشات ماه اخیر)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="horizontalBarChart" class="chartjs" data-userPercentage="{{ users_percentage }}"
+                                data-height="500"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header header-elements">
+                        <h5 class="card-title mb-0">مبلغ سفارشات</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="barChart4" class="chartjs" data-usersprice="{{ users_dict_price }}"
+                                data-height="500"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <h5 class="card-header">شهر های برتر (بیشترین سفارشات ماه اخیر)</h5>
+                    <div class="card-body">
+                        <canvas id="doughnutChart" data-chartcolors="{{ cities_chart_color.values|dict_to_list }}"
+                                data-cities="{{ cities_sell_dict }}" class="chartjs mb-4" data-height="350"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header header-elements">
+                        <h5 class="card-title mb-0">نوع پرداخت (بر حسب تعداد فاکتور)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="horizontalBarChart2" class="chartjs" data-paymenttype="{{ payment_type }}"
+                                data-height="500"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {#        <div class="">#}
+        {#            <div class="card">#}
+        {#                <div class=" w-50 card-header header-elements">#}
+        {#                    <h5 class="card-title mb-0">رنگ های پر سفارش</h5>#}
+        {#                </div>#}
+        {#                <div class="card-body" id="chartcontainer">#}
+        {#                    <canvas id="barChart" class="chartjs" data-height="300"#}
+        {#                            data-colors="{{ popular_colors }}"></canvas>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+    </div>
+{% endblock %}

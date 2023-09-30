@@ -1,0 +1,105 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست محصولات{% endblock title %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item active">لیست محصولات</li>
+            </ol>
+        </nav>
+    </div>
+
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% else %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>نام محصول</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ ایجاد</th>
+                    <th>جزئیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                    <td>{{ product.perName }}</td>
+                    <td>
+                        <label class="switch switch-success">
+                            <input type="checkbox" class="switch-input statusSwitch" data-id="{{ product.id }}"
+                                data-db="product" {% if product.isActive %} checked {% endif %}>
+                            <span class="switch-toggle-slider">
+                                <span class="switch-on">
+                                    <i class="bx bx-check"></i>
+                                </span>
+                                <span class="switch-off">
+                                    <i class="bx bx-x"></i>
+                                </span>
+                            </span>
+                        </label>
+                    </td>
+                    <td>{{ product.createdAt|to_jalali:'%y/%m/%d' }}</td>
+                    <td>
+                        <a href="{% url 'product_edit' product.id %}" class="btn btn-sm btn-label-secondary">
+                            ویرایش
+                        </a>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination justify-content-center">
+            {% if is_paginated %}
+            <div class="card-footer">
+                <div style="text-align: center;">
+
+                    {% if page_obj.has_previous %}
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="1">اولین صفحه</a>
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                        data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <a class="btn btn-primary btn-sm  paging" href="#" data-num="{{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="{{ num }}">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                        data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                        data-num="{{ page_obj.paginator.num_pages }}">
+                        آخرین صفحه</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- users edit ends -->
+{% endblock content %}

@@ -1,0 +1,81 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block title %}ویرایش محصول{% endblock title %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'product_list' %}">لیست محصولات</a>
+                </li>
+                <li class="breadcrumb-item active">ویرایش محصول</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card-body">
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+        {% endfor %}
+
+        <form class="form" method="post" action="{% url 'product_edit' product.id %}">
+            {% csrf_token %}
+            <div class="row my-3">
+                <div class="col-sm-6 mb-2">
+                    <label class="form-label">نام فارسی محصول*</label>
+                    <input type="text" class="form-control" name="perName" value="{{ product.perName }}" required>
+                </div>
+
+                <div class="col-sm-6 mb-2">
+                    <label class="form-label">نام انگلیسی محصول*</label>
+                    <input type="text" class="form-control" name="engName" value="{{ product.engName }}" dir="ltr"
+                        required>
+                </div>
+
+                <div class="col-12 mb-2">
+                    <label class="form-label">رنگ</label>
+                    <select class="select2 form-select" multiple name="color">
+                        {% for color in colors %}
+                        <option value="{{ color.id }}" {% for i in color.productcolor_set.all %}
+                            {% if i.product.id == product.id %} selected {% endif %} {% endfor %}>{{ color.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+
+
+            <div class="row mb-4" id="image-list-1">
+                <h4>اولویت نمایش به کاربر (بکشید و رها کنید)</h4>
+                {% for i in features %}
+                <div class="col-lg-2 col-md-4 col-sm-12">
+                    <div class="card drag-item cursor-move mb-4">
+                        <div class="card-body text-center">
+                            <h4 class="m-0">{{ i.featurevalue__feature__perName }}</h4>
+                            <input type="hidden" name="priority" value="{{ i.featurevalue__feature__id }}">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="row mt-4">
+                <div class="col-12" style="text-align: left;">
+                    <button type="submit" class="btn btn-label-primary mt-1">ویرایش</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

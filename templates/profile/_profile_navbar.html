@@ -1,0 +1,159 @@
+{% load order_tags %}
+{% load common %}
+<!-- User Sidebar -->
+<div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+    <!-- User Card -->
+    <div class="card mb-4">
+        <div class="card-body">
+            {% orders_count profile as dict %}
+            <ul class="p-0 m-0 mb-3">
+                <li class="d-flex align-items-center mb-3">
+                    <div class="avatar avatar-sm flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded-circle bg-label-primary"><i class="bx bx-cube"></i></span>
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                            <p class="mb-0">کل سفارشات</p>
+                        </div>
+                        <div class="item-progress">{{ dict|get_item:"all_orders" }}</div>
+                    </div>
+                </li>
+                <li class="d-flex align-items-center mb-3">
+                    <div class="avatar avatar-sm flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded-circle bg-label-info"><i
+                                class="bx bx-purchase-tag"></i></span>
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                            <p class="mb-0">ثبت شده</p>
+                        </div>
+                        <div class="item-progress">{{ dict|get_item:"registered_orders" }}</div>
+                    </div>
+                </li>
+                <li class="d-flex align-items-center mb-3">
+                    <div class="avatar avatar-sm flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded-circle bg-label-danger"><i
+                                class="bx bx-time"></i></span>
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                            <p class="mb-0">در حال آماده سازی</p>
+                        </div>
+                        <div class="item-progress">{{ dict|get_item:"producing_orders" }}</div>
+                    </div>
+                </li>
+                <li class="d-flex align-items-center">
+                    <div class="avatar avatar-sm flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded-circle bg-label-success"><i class="bx bx-check"></i></span>
+                    </div>
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                            <p class="mb-0">کامل شده</p>
+                        </div>
+                        <div class="item-progress">{{ dict|get_item:"completed_orders" }}</div>
+                    </div>
+                </li>
+            </ul>
+        <div class="bg-label-dark p-2 rounded-3">
+            <div class="mb-2 justify-content-between d-flex">
+                <small>%{{ profile.completed_percent }} پروفایل تکمیل شده</small>
+                {% if profile.completed_percent != 100 %}
+                    <a href="javascript:;" class="me-3 " data-bs-target="#editUser"
+                       data-bs-toggle="modal">تکمیل پروفایل</a>
+                {% endif %}
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ profile.completed_percent }}%"
+                     aria-valuenow="{{ profile.completed_percent }}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+
+            </div>
+        </div>
+            <h5 class="pb-2 border-bottom mb-4 secondary-font">جزئیات</h5>
+            <div class="info-container">
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <span class="fw-bold me-2">نام کاربری:</span>
+                        <span>{{ profile.user.username }}</span>
+                    </li>
+                    <li class="mb-3">
+                        <span class="fw-bold me-2">نام و نام خانوادگی:</span>
+                        <span>{{ profile.get_full_name }}</span>
+                    </li>
+                    <li class="mb-3">
+                        <span class="fw-bold me-2">کارشناس مربوطه:</span>
+                        <span>{{ profile.expert }}</span>
+                    </li>
+                    <li class="mb-3">
+                        <span class="fw-bold me-2">آدرس:</span>
+                        <span>{{ profile.state.name }} | {{ profile.city.name }} | {{ profile.address }}</span>
+                    </li>
+                    {% if profile.user.email %}
+                        <li class="mb-3">
+                            <span class="fw-bold me-2">ایمیل:</span>
+                            <span>{{ profile.user.email }}</span>
+                        </li>
+                    {% endif %}
+                    {% if user.profile.birth_date %}
+                        <li class="mb-3">
+                            <span class="fw-bold me-2">تاریخ تولد:</span>
+                            <span>{{ profile.birth_date }}</span>
+                        </li>
+                    {% endif %}
+                    <li class="mb-3">
+                        <span class="fw-bold me-2">وضعیت:</span>
+                        {% if profile.user.is_active %}
+                            <span class="badge bg-label-success">فعال</span>
+                        {% else %}
+                            <span class="badge bg-label-danger">غیرفعال</span>
+                        {% endif %}
+                    </li>
+                </ul>
+                <div class="d-flex justify-content-center pt-3">
+                    <a href="javascript:;" class="btn btn-primary me-3" data-bs-target="#editUser"
+                       data-bs-toggle="modal">ویرایش</a>
+                    {% if request.user.is_superuser %}
+                        <a href="{% url 'abandon_user' profile.user.id %}" class="btn btn-label-danger suspend-user">تعلیق</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /User Card -->
+    <!-- Plan Card -->
+    {#    <div class="card">#}
+    {#        <div class="card-body">#}
+    {#            <div class="d-flex justify-content-between align-items-start">#}
+    {#                <span class="badge bg-label-primary">استاندارد</span>#}
+    {#                <div class="d-flex justify-content-center">#}
+    {#                    <sup class="h5 pricing-currency mt-3 mt-sm-4 mb-0 me-1 text-primary">هزار#}
+    {#                        تومان</sup>#}
+    {#                    <h1 class="display-3 fw-normal mb-0 text-primary">99</h1>#}
+    {#                    <sub class="fs-6 pricing-duration mt-auto mb-4">/ ماهانه</sub>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <ul class="ps-3 g-2 mb-3 lh-1-85">#}
+    {#                <li class="mb-2">10 کاربر</li>#}
+    {#                <li class="mb-2">تا 10 گیگابایت فضا</li>#}
+    {#                <li>پشتیبانی پایه</li>#}
+    {#            </ul>#}
+    {#            <div class="d-flex justify-content-between align-items-center mb-2">#}
+    {#                <h6 class="mb-0">روز</h6>#}
+    {#                <h6 class="mb-0">65% تمام شده</h6>#}
+    {#            </div>#}
+    {#            <div class="progress mb-3" style="height: 8px">#}
+    {#                <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="65"#}
+    {#                     aria-valuemin="0" aria-valuemax="100"></div>#}
+    {#            </div>#}
+    {#            <span>4 روز باقی مانده</span>#}
+    {#            <div class="d-grid w-100 mt-3 pt-2">#}
+    {#                <button class="btn btn-primary" data-bs-target="#upgradePlanModal"#}
+    {#                        data-bs-toggle="modal">#}
+    {#                    ارتقای پلن#}
+    {#                </button>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+    <!-- /Plan Card -->
+</div>
+<!--/ User Sidebar -->

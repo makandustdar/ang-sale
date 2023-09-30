@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load order_tags %}
+
+{% load static %}
+
+{% block title %}ثبت قیمت{% endblock title %}
+
+{% block content %}
+
+    <form method="post">{% csrf_token %}
+        <p>آیا مطمئن هستید سفارش "{{ object }} پاک شود"?</p>
+        <input type="submit" value="Confirm">
+    </form>
+{% endblock %}

@@ -1,0 +1,76 @@
+{#{% extends 'base.html' %}#}
+{% load static %}
+{% regroup featurevalues by featurevalue__feature__perName as feature_list %}
+
+{% if colors %}
+    <div class="col-md-3 mb-2">
+        <label for="" class="form-label">رنگ*</label>
+        <select name="color" class="select2 form-select">
+            {% for color in colors %}
+                <option value="{{ color.color.id }}">{{ color.color.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endif %}
+
+{% for featurevalue__feature__perName in feature_list %}
+    <div class="col-md-3 mb-2">
+        <label for="" class="form-label">{{ featurevalue__feature__perName.grouper }}*</label>
+        <select name="productfeaturevalue" class="select2 form-select" required id="">
+            {% for i in featurevalue__feature__perName.list %}
+                <option value="{{ i.featurevalue__feature__id }}|{{ i.featurevalue__id }}"
+                        {% if i.featurevalue__name == 'براق' or i.featurevalue__name == '60' or i.featurevalue__name == 'یک رو' or i.featurevalue__name == 'آرتا' %}
+                        selected
+                        {% endif %}>
+                    {{ i.featurevalue__name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+{% endfor %}
+
+<div class="col-md-3 mb-2">
+    <label for="" class="form-label">تعداد*</label>
+    <input type="number" class="form-control" name="quantity" min="1" required>
+</div>
+{% if user.is_staff or user.is_superuser %}
+    <div class="col-md-3 mb-2">
+        <label for="" class="form-label">فی*</label>
+        <input type="text" class="form-control" id="presubmitfee" name="feeprice" min="1" required>
+    </div>
+{% endif %}
+
+<script>
+    let presubmit_fee = document.getElementById("presubmitfee")
+
+    function updateTextView(_obj) {
+        const num = getNumber(_obj.value);
+        if (num === 0) {
+            _obj.value = '';
+        } else {
+            _obj.value = num.toLocaleString();
+        }
+    }
+
+    function getNumber(_str) {
+        const arr = _str.split('');
+        const out = new Array();
+        for (let cnt = 0; cnt < arr.length; cnt++) {
+            if (isNaN(arr[cnt]) === false) {
+                out.push(arr[cnt]);
+            }
+        }
+        return Number(out.join(''));
+    }
+
+    presubmit_fee.addEventListener('keyup', function () {
+        console.log('ggg')
+        updateTextView(presubmit_fee)
+    });
+</script>
+
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'vendor/libs/select2/select2.js' %}"></script>
+<script src="{% static 'vendor/libs/select2/i18n/fa.js' %}"></script>
+<script src="{% static 'js/forms-extras.js' %}"></script>
+<script src="{% static 'js/forms-selects.js' %}"></script>

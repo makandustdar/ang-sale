@@ -1,0 +1,151 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}ثبت شکایت{% endblock title %}
+
+{% block content %}
+
+<div class="row invoice-preview">
+    <!-- Invoice -->
+    <div class="col-12 mb-md-0 mb-4">
+        <div class="card invoice-preview-card">
+            <div class="card-body">
+                <div
+                    class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
+                    <div class="mb-xl-0 mb-4">
+                        <div class="d-flex align-items-center svg-illustration mb-3 gap-2">
+                            <span class="app-brand-text h3 mb-0 fw-bold">گروه صنعتی ANG</span>
+                        </div>
+                        <p class="mb-1">{{ order.user.profile.get_full_name }}</p>
+                        <p class="mb-1">
+                            {{ order.user.profile.state.name }}.{{ order.user.profile.city.name }}.{{ order.user.profile.address }}
+                        </p>
+                        <p class="mb-0"><span class="d-inline-block" dir="ltr">{{ order.user.profile.mobile }}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <h4>شماره سفارش : {{ order.transId }}#</h4>
+                        <div class="mb-2 lh-1-85">
+                            <span class="me-1">تاریخ صدور:</span>
+                            <span class="fw-semibold">{{ order.createdAt|to_jalali:'%y/%m/%d' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-0">
+
+            <form action="{% url 'report_add' order.id %}" method="post">
+                {% csrf_token %}
+                <div class="table-reponsive text-nowrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>نام محصول</th>
+                                <th>تعداد معیوب</th>
+                                <th>مشکل کیفی</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="form-check-input" name="item" value="{{ item.id }}">
+                                    <input type="hidden" name="product_{{ item.id }}" value="{{ item.product.id }}">
+                                </td>
+                                <td>
+                                    {{ item.productName }} ->
+                                    {% for i in item.orderitemdetail_set.all %}
+                                    {{ i.featureName }} : {{ i.featureValueName }} /
+                                    {% endfor %}
+                                    تعداد : {{ item.quantity }}
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control" name="problemCount_{{ item.id }}">
+                                </td>
+                                <td>
+                                    <select class="select2 form-select" name="qualityProblem_{{ item.id }}">
+                                        <option value="">لطفا انتخاب کنید</option>
+                                        <option value="ترک خوردن محصول">ترک خوردن محصول</option>
+                                        <option value="باز شدن مغز ورق ">باز شدن مغز ورق</option>
+                                        <option value="فرو رفتگی روی محصول ">فرو رفتگی روی محصول </option>
+                                        <option value="حباب دار بودن روی محصول ">حباب داربودن روی محصول
+                                        </option>
+                                        <option value="دو رنگی بودن ورق ">دو رنگی بودن ورق</option>
+                                        <option value="تغییر رنگ ورق ">تغییر رنگ ورق</option>
+                                        <option value="ترکیدگی اطراف محصول ">ترکیدگی اطرافمحصول </option>
+                                        <option value="ترک در کل سطح ">ترک در کل سطح</option>
+                                        <option value="پوک بودن محصول ">پوک بودن محصول</option>
+                                        <option value="چروک بودن روکش ">چروک بودن روکش</option>
+                                        <option value="جدا شدن روکش ">جدا شدن روکش</option>
+                                        <option value="موج دار بودن ">موج دار بودن</option>
+                                        <option value="تاب برداشتن ">تاب برداشتن </option>
+                                        <option value="باد کردن ">باد کردن </option>
+                                        <option value="سوراخ بودن کناره ها ">سوراخ بودن کناره ها </option>
+                                        <option value="تک سلفون بودن کل ورق ">تک سلفون بودن کل ورق </option>
+                                        <option value="پوست پرتقالی بودن سطح ">پوست پرتقالی بودن سطح
+                                        </option>
+                                        <option value="مغزی خام ایرانی و خارجی">مغزی خام ایرانی و خارجی
+                                        </option>
+                                        <option value="کیفیت پایین محصول ">کیفیت پایین محصول </option>
+                                        <option value="اختلاف رنگ سمپل و محصول">اختلاف رنگ سمپل و محصول
+                                        </option>
+                                        <option value="تفاوت درجه های ارسالی ">تفاوت درجه های ارسالی
+                                        </option>
+                                        <option value="ریزش اکلیل">ریزش اکلیل</option>
+                                        <option value="نداشتن سلفون ">نداشتن سلفون</option>
+                                        <option value="عدم ضخامت یکسان ">عدم ضخامت یکسان</option>
+                                        <option value="استاندارد نبودن اندازه ها">استانداردنبودن اندازه ها
+                                        </option>
+                                        <option value="جفت نشدن ورق ها ">جفت نشدن ورق ها</option>
+                                        <option value="شکستگی ورق ها ">شکستگی ورق ها</option>
+                                        <option value="بلند شدن یو وی">بلند شدن یو وی</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="my-0">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">خواسته مشتری</label>
+                            <select class="form-select" name="customerRequest" id="customerRequest">
+                                <option value="جبران خسارت">جبران خسارت</option>
+                                <option value="تخفیف">تخفیف</option>
+                                <option value="جایگزین ورق">جایگزین ورق</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">نظر مدیر کارخانه</label>
+                            <select class="form-select" name="managerDicision" id="managerDicision">
+                                <option value="عودت گردد">عودت گردد</option>
+                                <option value="جایگزین گردد">جایگزین گردد</option>
+                                <option value="تخفیف داده شود">تخفیف داده شود</option>
+                                <option value="عدم ایراد در محصول">عدم ایراد در محصول</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mt-1">
+                            <label class="form-label">تصمیم نهایی</label>
+                            <textarea class="form-control" name="finalDecision" id="" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="row mt-4">
+                        <div class="col-12" style="text-align: left;">
+                            <button type="submit" name="profile" class="btn btn-label-primary mt-1">ثبت</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /Invoice -->
+{% endblock content %}

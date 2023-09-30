@@ -1,0 +1,185 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست کارشناسان{% endblock title %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item active">لیست کارشناسان</li>
+                </ol>
+            </nav>
+        </div>
+        <h5 class="text-center d-block">کارشناس های برتر</h5>
+        <div class="mb-5 d-flex justify-content-around w-50 m-auto">
+            {% for user in top_experts %}
+                <div class="w-auto">
+                    <div class="avatar avatar-lg m-auto">
+                                    <span class="avatar-initial rounded-circle bg-label-warning">
+                                        <i class="bx bx-medal fs-1"></i>
+                                    </span>
+                    </div>
+                    <p class="m-0 m-auto text-center">{{ user }}</p>
+                    <p class="m-auto text-center">
+                        <small>
+                            تعداد مشتری: {{ user.customers_count }}
+                        </small>
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr class="text-center">
+                    <th>ردیف</th>
+                    <th>نام و نام خانوادگی</th>
+                    <th>نام کاربری</th>
+                    <th>شماره همراه</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ ثبت نام</th>
+                    <th>جزئیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for expert in experts %}
+                    <tr class="text-center">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ expert }}</td>
+                        <td>{{ expert.user.username }}</td>
+                        <td>{{ expert.mobile }}</td>
+                        <td>
+                            <label class="switch switch-success">
+                                <input type="checkbox" class="switch-input statusSwitch" data-id="{{ expert.user.id }}"
+                                       data-db="expert" {% if expert.user.is_active %} checked {% endif %}>
+                                <span class="switch-toggle-slider">
+                                <span class="switch-on">
+                                    <i class="bx bx-check"></i>
+                                </span>
+                                <span class="switch-off">
+                                    <i class="bx bx-x"></i>
+                                </span>
+                            </span>
+                            </label>
+                        </td>
+                        <td>{{ expert.user.date_joined|to_jalali:'%y/%m/%d' }}</td>
+                        <td class="justify-content-between d-flex">
+                            <a href="{% url 'expert_edit' expert.id %}">
+                                <i class="bx bx-edit font-medium-1" title="ویرایش"></i>
+                            </a>
+                            <a href="{% url 'users_list' %}?q=&expert={{ expert.id }}&role=&status=&sort=">
+                                <i class="bx bx-group font-medium-1" title="لیست کاربران"></i>
+                            </a>
+                            <button class="btn text-primary p-0" data-bs-toggle="modal"
+                                    data-bs-target="#replace_customers_{{ expert.user.id }}">
+                                <i class="bx bx-transfer font-medium-1" title="جابجایی مشتریان"></i>
+                            </button>
+                            <div class="modal fade" id="replace_customers_{{ expert.user.id }}" tabindex="-1"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title secondary-font" id="modalCenterTitle">
+                                                جابجایی مشتریان {{ expert }}
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <form action="{% url "transfer_customers" expert.id %}" method="post">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col mb-3">
+                                                        <label for="to_expert" class="form-label">کارشناس مقصد</label>
+                                                        <select class="form-control" name="to_expert" id="to_expert" required>
+                                                            <option value="">کارشناس مقصد را انتخاب کنید</option>
+                                                            {% for expert in experts %}
+                                                                <option value="{{ expert.id }}">{{ expert }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col mb-3">
+                                                        <label class="form-label">انتخاب مشتریان</label>
+                                                        <select class=" select2 form-control" name="customers_list" multiple>
+                                                            {% for customer in expert.customers.all %}
+                                                                <option value="{{ customer.id }}">{{ customer.get_full_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <label for="transfer_all_checkbox">همه مشتریان جابجا شوند؟</label>
+                                                <input type="checkbox" name="transfer_all" id="transfer_all_checkbox">
+                                            </div>
+                                            <div class="d-flex justify-content-between px-4">
+{#                                                <button type="submit" class="btn btn-danger transformallcustomers">#}
+{#                                                    انتقال#}
+{#                                                    همه#}
+{#                                                </button>#}
+                                                <button type="submit" class="btn btn-primary">منتقل کن</button>
+                                            </div>
+                                        </form>
+                                        <div class="modal-footer">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination justify-content-center">
+                {% if is_paginated %}
+                    <div class="card-footer">
+                        <div style="text-align: center;">
+
+                            {% if page_obj.has_previous %}
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="1">اولین صفحه</a>
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                   data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <a class="btn btn-primary btn-sm  paging" href="#"
+                                       data-num="{{ num }}">{{ num }}</a>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                   data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                   data-num="{{ page_obj.paginator.num_pages }}">
+                                    آخرین صفحه</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- experts edit ends -->
+{% endblock content %}

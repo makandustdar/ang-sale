@@ -1,0 +1,82 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block title %}ورود مدیریت{% endblock title %}
+
+{% block content %}
+
+   <!-- Content -->
+
+ <!-- Content -->
+
+ <div class="authentication-wrapper authentication-cover">
+    <div class="authentication-inner row m-0">
+      <!-- /Left Text -->
+      <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center">
+        <div class="flex-row text-center mx-auto">
+          <img src="{% static 'img/login-light.png'%}" alt="Auth Cover Bg color" width="520" class="img-fluid authentication-cover-img" >
+          <div class="mx-auto">
+            <h3>سامانه ثبت سفارش محصولات گروه صنعتی ANG</h3>
+
+          </div>
+        </div>
+      </div>
+      <!-- /Left Text -->
+           
+      <!-- Login -->
+       
+      <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-sm-5 p-4">
+        <div class="w-px-400 mx-auto">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+            
+          <!-- Logo -->
+          <span class="app-brand-logo">
+                    <img src="{% static 'img/login.png' %}" alt="reg-ang" style="max-width: 100%;">
+                </span>
+                
+          <!-- /Logo -->
+          <h4 class="mb-2">خوش آمدید!</h4>
+          <p class="mb-4">لطفا وارد حساب خود شوید</p>
+
+        <form action="{% url 'admin_login' %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="email" class="form-label">ایمیل یا نام کاربری</label>
+              <input type="text" class="form-control text-left" name="username" id="exampleInputUsername" placeholder="نام کاربری" dir="ltr">
+            </div>
+            <div class="mb-3 form-password-toggle">
+              <div class="d-flex justify-content-between">
+                <label class="form-label" for="password">رمز عبور</label>
+                
+              </div>
+              <div class="input-group input-group-merge">
+                <input type="password" class="form-control text-left" name="password" id="exampleInputPass"
+                    placeholder="رمز عبور" dir="ltr">
+                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="remember-me">
+                <label class="form-check-label" for="remember-me"> به خاطر سپاری </label>
+              </div>
+            </div>
+           <button type="submit" class="btn btn-primary glow w-100 position-relative">ورود<i id="icon-arrow"
+                    class="bx bx-left-arrow-alt"></i></button>
+          </form>
+
+
+        </div>
+      </div>
+      <!-- /Login -->
+    </div>
+  </div>
+
+{% endblock content %}

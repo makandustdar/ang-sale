@@ -1,0 +1,71 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block title %}ورود مدیریت{% endblock title %}
+
+{% block content %}
+
+   <!-- Content -->
+
+ <!-- Content -->
+
+<div class="authentication-wrapper authentication-cover">
+    <div class="authentication-inner row m-0">
+        
+        <!-- /Left Text -->
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center">
+            <div class="flex-row text-center mx-auto">
+                <img src="{% static 'img/login-light.png'%}" alt="Auth Cover Bg color" width="520" class="img-fluid authentication-cover-img" >
+                <div class="mx-auto">
+                    <h3>سامانه ثبت سفارش محصولات گروه صنعتی ANG</h3>
+                 </div>
+            </div>
+         </div>
+        <!-- /Left Text -->
+           
+        <!-- Login -->
+        <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg p-sm-5 p-4">
+            <div class="w-px-400 mx-auto">
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+                {% endfor %}
+
+          
+                <span class="app-brand-logo">
+                    <img src="{% static 'img/login.png' %}" alt="reg-ang" style="max-width: 100%;">
+                </span>
+                
+                <h4 class="mb-2">خوش آمدید!</h4>
+                <p class="mb-4">لطفا شماره همراه خود را وارد کنید</p>
+
+                <form action="{% url 'login' %}" method="post">
+                    {% csrf_token %}
+            
+                    <div class="form-group mb-2">
+                        <label class="form-label" for="mobileInput">شماره همراه</label>
+                        <input type="text" class="form-control text-left" name="mobile" id="mobileInput"
+                    placeholder="09121234567" dir="ltr">
+                    </div>
+            
+            
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember-me">
+                            <label class="form-check-label" for="remember-me"> به خاطر سپاری </label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary d-grid w-100" type="submit">ورود</button>
+                </form>
+            </div>
+        </div>
+      <!-- /Login -->
+      
+    </div>
+</div>
+
+{% endblock content %}

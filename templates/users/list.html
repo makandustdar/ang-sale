@@ -1,0 +1,204 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست مشتریان{% endblock title %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item active">لیست مشتریان</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="card-body">
+            {% if top_users %}
+                <h5 class="text-center d-block">مشتری های برتر</h5>
+                <div class="mb-5 d-flex justify-content-around w-50 m-auto">
+                    {% for user in top_users %}
+                        <div class="w-auto">
+                            <div class="avatar avatar-lg m-auto">
+                                    <span class="avatar-initial rounded-circle bg-label-warning">
+                                        <i class="bx bx-medal fs-1"></i>
+                                    </span>
+                            </div>
+                            <p class="m-0 m-auto text-center">
+                                {% if user.profile %}
+                                    {{ user.profile.get_full_name }}
+                                {% endif %}
+                            </p>
+                            <p class="m-auto text-center">
+                                <small>
+                                    تعداد سفارش: {{ user.order_count }}
+                                </small>
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+
+            <form action="{% url 'users_list' %}" autocomplete="off">
+                <div class="row rounded">
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <input type="search" minlength="2" class="form-control" name="q" value="{{ request.GET.q }}"
+                               placeholder="جستجو..">
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <select class="select2 form-select" name="expert" id="">
+                            <option value="">کارشناس</option>
+                            {% for expert in experts %}
+                                <option value="{{ expert.id }}" {% if request.GET.expert|add:0 == expert.id %} selected
+                                {% endif %}>{{ expert }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <select class="form-select" name="role" id="">
+                            <option value="">کاربر</option>
+                            <option value="1" {% if request.GET.role == '1' %} selected {% endif %}>حقیقی</option>
+                            <option value="2" {% if request.GET.role == '2' %} selected {% endif %}>حقوقی</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <select class="form-select" name="status" id="">
+                            <option value="">وضعیت</option>
+                            <option value="active" {% if request.GET.status == 'active' %} selected {% endif %}>فعال
+                            </option>
+                            <option value="not-active" {% if request.GET.status == 'not-active' %} selected {% endif %}>
+                                غیرفعال
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <select class="form-select" id="users-list-role" name="sort">
+                            <option value="">مرتب سازی</option>
+                            <option value="asc" {% if request.GET.sort == 'asc' %} selected {% endif %}>صعودی</option>
+                            <option value="desc" {% if request.GET.sort == 'desc' %} selected {% endif %}>نزولی</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-2">
+                        <button type="submit" class="btn btn-label-primary w-100">فیلتر</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <hr class="my-0">
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>نام و نام خانوادگی</th>
+                    <th>شماره همراه</th>
+                    <th>کاربر</th>
+                    <th>وضعیت</th>
+                    <th>درصد تکمیل</th>
+                    <th>تاریخ ثبت نام</th>
+                    <th>جزئیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                        <td>
+                            {% if user.profile %}
+                                <a href="{% url 'profile' user.profile.id %}">{{ user.profile.get_full_name }}</a>
+                            {% else %}
+                                پروفایل برای کاربر {{ user.id }} یافت نشد
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.profile %}
+                                {{ user.profile.mobile }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.profile %}
+                                {{ user.profile.get_user_role }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <label class="switch switch-success">
+                                <input type="checkbox" class="switch-input statusSwitch" data-id="{{ user.id }}"
+                                       data-db="users" {% if user.is_active %} checked {% endif %}>
+                                <span class=" switch-toggle-slider">
+                                <span class="switch-on">
+                                    <i class="bx bx-check"></i>
+                                </span>
+                                <span class="switch-off">
+                                    <i class="bx bx-x"></i>
+                                </span>
+                            </span>
+                            </label>
+                        </td>
+                        <td>
+                            {% if user.profile %}
+                                {{ user.profile.completed_percent }}
+                            {% endif %}
+                        </td>
+                        <td>{{ user.date_joined|to_jalali:'%y/%m/%d' }}</td>
+                        <td>
+                            <a href="{% url 'user_edit' user.id %}">
+                                <i class="badge-circle badge-circle-light-primary bx bx-edit font-medium-1 mb-50"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination justify-content-center">
+                {% if is_paginated %}
+                    <div class="card-footer">
+                        <div style="text-align: center;">
+
+                            {% if page_obj.has_previous %}
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="1">اولین صفحه</a>
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                   data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <a class="btn btn-primary btn-sm  paging" href="#"
+                                       data-num="{{ num }}">{{ num }}</a>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ num }}">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                   data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                                <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                   data-num="{{ page_obj.paginator.num_pages }}">
+                                    آخرین صفحه</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- users edit ends -->
+{% endblock content %}

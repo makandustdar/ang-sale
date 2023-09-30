@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load jalali_tags %}
+
+{% block content %}
+    <div class="col-12 mb-md-0 mb-4">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">
+                    <button type="button" class="btn close" data-dismiss="alert" aria-label="بستن">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="btn close" data-dismiss="alert" aria-label="بستن">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="card invoice-preview-card">
+            <div class="card-body">
+                <div
+                        class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
+                    <div class="mb-xl-0 mb-4">
+                        <div class="d-flex align-items-center svg-illustration mb-3 gap-2">
+                            <span class="app-brand-text h3 mb-0 fw-bold">{{ opportunity.title }}</span>
+                        </div>
+                        <a href="{% url 'edit_opportunity' opportunity.id %}">
+                            <button class="mb-0 btn btn-secondary p-2">
+                                ویرایش
+                            </button>
+                        </a>
+                    </div>
+                    <div>
+                        <h4>وضعیت : {{ opportunity.status }}</h4>
+                        <div class="mb-2 lh-1-85">
+                            <span class="me-1">تاریخ ثبت:</span>
+                            <span class="fw-semibold">{{ opportunity.created_at|to_jalali:'%y/%m/%d %H:%M:%S' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-0">
+            <div class="card-body">
+                <div class="row p-sm-3 p-0">
+                    <div class="col-xl-6 col-md-12 col-sm-5 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
+                        <p class="mb-1">
+                            حساب :
+                            <b>{{ opportunity.account }}</b>
+                        </p>
+                        <p class="mb-1">
+                            تاریخ فروش :
+                            <b>{{ opportunity.sell_date }}</b>
+                        </p>
+                        <p class="mb-1">
+                            احتمال فروش :
+                            <b>{{ opportunity.sell_probability }}</b>
+                        </p>
+                        <p class="mb-1">
+                            کارشناس :
+                            <b>{{ opportunity.expert }}</b>
+                        </p>
+                        <p class="mb-1">
+                            مبلغ کل :
+                            <b>{{ opportunity.total_price }}</b>
+                        </p>
+                        <p class="mb-1">
+                            منبع :
+                            <b>{{ opportunity.source }}</b>
+                        </p>
+                        <p class="mb-1">
+                            فدم بعدی :
+                            <b>{{ opportunity.next_step }}</b>
+                        </p>
+                        <p class="mb-1">
+                            توضیحات :
+                            <b>{{ opportunity.description }}</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

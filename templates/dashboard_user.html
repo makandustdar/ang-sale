@@ -1,0 +1,152 @@
+{% extends './base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}داشبورد{% endblock title %}
+
+{% block content %}
+
+<section id="dashboard-analytics">
+
+    <div class="row">
+        <div class="col-12 col-md-12 col-lg-12 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <span class="d-block text-nowrap pt-1">سامانه ثبت سفارش محصولات گروه صنعتی ANG</span>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <div class="card text-center">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="badge-circle badge-circle-lg badge-circle-light-danger mx-auto my-1">
+                            <i class="bx bx-shopping-bag font-medium-5"></i>
+                        </div>
+                        <p class="text-muted mb-0 line-ellipsis">سفارش</p>
+                        <h2 class="mb-0 primary-font">{{ orders|length }}</h2>
+                        <ul class="nav navbar-nav bookmark-icons">
+                            <a href="/order/create/" class="btn btn-outline-primary mr-1 mb0">
+                                <i class="ficon bx bx-plus"></i> ثبت سفارش
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <div class="card text-center">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="badge-circle badge-circle-lg badge-circle-light-success mx-auto my-1">
+                            <i class="bx bx-message font-medium-5"></i>
+                        </div>
+                        <p class="text-muted mb-0 line-ellipsis">پیام ها</p>
+                        <h2 class="mb-0 primary-font">0</h2>
+                        <ul class="nav navbar-nav bookmark-icons">
+                            <a href="#" class="btn btn-outline-success mr-1 mb0">
+                                <i class="ficon bx bxs-area"></i> مشاهده پیام
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <div class="card text-center">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="badge-circle badge-circle-lg badge-circle-light-warning mx-auto my-1">
+                            <i class="bx bx-file font-medium-5"></i>
+                        </div>
+                        <p class="text-muted mb-0 line-ellipsis">فایل های ضمیمه شده</p>
+                        <h2 class="mb-0 primary-font">0</h2>
+                        <ul class="nav navbar-nav bookmark-icons">
+                            <a href="#" class="btn btn-outline-warning mr-1 mb0">
+                                <i class="ficon bx bxs-cloud-download"></i> مشاهده فایل
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <div class="card text-center">
+                <div class="card-content">
+                    <div class="card-body">
+                        <div class="badge-circle badge-circle-lg badge-circle-light-info mx-auto my-1">
+                            <i class="bx bx-user font-medium-5"></i>
+                        </div>
+                        <p class="text-muted mb-0 line-ellipsis">محصولات</p>
+                        <h2 class="mb-0 primary-font">0</h2>
+                        <ul class="nav navbar-nav bookmark-icons">
+                            <a href="#" class="btn btn btn-outline-info mr-1 mb0">
+                                <i class="ficon bx bx-cart"></i> مشاهده محصولات
+                            </a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="row mt-4">
+        <!-- Notification Widget Starts -->
+        <div class="col-lg-6">
+            <div class="card">
+                <h5 class="card-header">آخرین سفارشات</h5>
+                <div class="card-body">
+                    <ul class="timeline mt-3">
+                        {% for order in orders|slice:'5' %}
+                        <li class="timeline-item timeline-item-transparent">
+                            <span class="timeline-point 
+                                {% if order.completed and order.track == 'COMPLETE' %} timeline-point-success 
+                                {% elif order.completed and order.track == 'CANCEL' %} timeline-point-danger
+                                {% else %} timeline-point-primary {% endif %}"></span>
+                            <div class="timeline-event">
+                                <div class="timeline-header border-bottom mb-3">
+                                    <h6 class="mb-2">#{{ order.transId }}</h6>
+                                    <small class="text-muted">{{ order.createdAt|to_jalali:'%y/%m/%d' }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between flex-wrap mb-2">
+                                    <div>
+                                        <span>وضعیت</span>
+                                        <i class="bx bx-right-arrow-alt scaleX-n1-rtl mx-3"></i>
+                                        <span class="badge 
+                                        {% if order.track == 'COMEPLETE' %} bg-label-success
+                                        {% elif order.track == 'CANCEL' %} bg-label-danger
+                                        {% elif not order.track %} bg-label-warning
+                                        {% else %} bg-label-primary
+                                        {% endif %}">{{ order.get_track }}</span>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    {% for item in order.orderitem_set.all %}
+                                    <span class="badge bg-label-dark">{{ item.productName }}</span>
+                                    {% endfor %}
+                                </div>
+                                <a href="{% url 'order_detail' order.id %}">
+                                    <i class="bx bx-link"></i>
+                                    مشاهده سفارش
+                                </a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Notification Widget Ends -->
+    </div>
+</section>
+{% endblock content %}

@@ -1,0 +1,175 @@
+{% extends '../base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}لیست سفارشات{% endblock title %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header border-bottom">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item active">لیست سفارشات</li>
+                </ol>
+            </nav>
+            <form
+                    action="{% if request.user.is_staff %} {% url 'admin_order_list' %} {% else %}  {% url 'order_list' %} {% endif %}">
+                <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+                    <div class='col-md-12 mb-4'>
+                        <a href="{% url 'admin_order_list' %}?year=1401" class="text-white">
+                            <button type="button" class="btn btn-primary">1401</button>
+                        </a>
+                        <a href="{% url 'admin_order_list' %}?year=1402" class="text-white">
+                            <button type="button" class="btn btn-primary">1402</button>
+                        </a>
+                    </div>
+                    <div class="col-md-3 ">
+                        <input type="search" class="form-control" name="q" value="{{ request.GET.q }}"
+                               placeholder="جستجو...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="track">
+                            <option value="">وضعیت سفارش</option>
+                            <option value="REGISTER" {% if request.GET.track == 'REGISTER' %} selected {% endif %}>ثبت
+                                سفارش
+                            </option>
+                            <option value="HOLDING" {% if request.GET.track == 'HOLDING' %} selected {% endif %}>در
+                                انتظار
+                                تایید سفارش
+                            </option>
+                            <option value="PRODUCING" {% if request.GET.track == 'PRODUCING' %} selected {% endif %}>
+                                درحال
+                                تولید
+                            </option>
+                            <option value="PAYING" {% if request.GET.track == 'PAYING' %} selected {% endif %}>در انتظار
+                                تکمیل وجه
+                            </option>
+                            <option value="COMPLETE" {% if request.GET.track == 'COMPLETE' %} selected {% endif %}>تکمیل
+                                سفارش
+                            </option>
+                            <option value="CANCEL" {% if request.GET.track == 'CANCEL' %} selected {% endif %}>لغو سفارش
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 ">
+                        <select class="form-select" name="sort">
+                            <option value="desc" {% if request.GET.sort == 'desc' %} selected {% endif %}>آخرین سفارشات
+                            </option>
+                            <option value="asc" {% if request.GET.sort == 'asc' %} selected {% endif %}>اولین سفارشات
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-label-primary w-100">فیلتر</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+
+        {% if orders %}
+            <div class="table-responsive text-nowrap">
+                <table class="table text-center">
+                    <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>نام سفارش دهنده</th>
+                        <th>شماره سفارش</th>
+                        <th>وضعیت سفارش</th>
+                        <th>تاریخ ایجاد</th>
+                        <th>جزئیات</th>
+{#                        {% if request.user.is_staff %}#}
+{#                            <th>ثبت شکایت</th>#}
+{#                        {% endif %}#}
+                        <th>حذف</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                            <td>
+                                {% if order.user.profile %}
+                                    <a href="{% url 'profile' order.user.profile.id %}">{{ order.user.profile.get_full_name }}</a>
+                                {% else %}
+                                    پروفایل کاربر {{ order.user }} یافت نشد
+                                {% endif %}
+                            </td>
+                            <td><span class="badge rounded-pill bg-label-success">{{ order.transId }}</span></td>
+                            <td><span class="badge rounded-pill bg-label-warning">{{ order.get_track }}</span></td>
+                            <td>{{ order.order_date|date:'Y/m/d' }}</td>
+                            <td>
+                                <a href="{% url 'order_detail' order.id %}">
+                                    <i class="badge-circle badge-circle-light-primary bx bx-show font-medium-1"></i>
+                                </a>
+                            </td>
+{#                            {% if request.user.is_staff %}#}
+{#                                <td>#}
+{#                                    <a href="{% url 'report_add' order.id %}" class="btn btn-label-danger btn-sm">ثبت#}
+{#                                        شکایت</a>#}
+{#                                </td>#}
+{#                            {% endif %}#}
+                            <td><a href="#" data-id="{{ order.id }}" class="orderDeleteBtn"><i class="bx bx-trash"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="pagination justify-content-center">
+                    {% if is_paginated %}
+                        <div class="card-footer">
+                            <div style="text-align: center;">
+
+                                {% if page_obj.has_previous %}
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#" data-num="1">اولین
+                                        صفحه</a>
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <a class="btn btn-primary btn-sm  paging" href="#"
+                                           data-num="{{ num }}">{{ num }}</a>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                           data-num="{{ num }}">{{ num }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                                    <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                       data-num="{{ page_obj.paginator.num_pages }}">
+                                        آخرین صفحه</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="alert text-center">
+                <img src="{% static 'img/illustrations/boy-deal-review-light.png' %}" alt=""
+                     style="max-width:20%; width:20%">
+                <p class="text-mute">داده ای وجود ندارد.</p>
+                <a {% if request.user.is_staff %} href="{% url 'admin_order_add' %}" {% else %}
+                                                  href="{% url 'order_add' %}"
+                {% endif %} class="btn btn-label-primary">ثبت سفارش</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

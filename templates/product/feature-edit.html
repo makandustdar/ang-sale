@@ -1,0 +1,183 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block title %}ویرایش مشخصه محصول{% endblock title %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'product_list' %}">لیست محصولات</a>
+                    </li>
+                    <li class="breadcrumb-item active">ویرایش مشخصه محصول</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+            <form class="form repeater-default" method="post" action="{% url 'feature_edit' feature.id %}">
+                {% csrf_token %}
+                <div class="row my-3">
+                    <div class="col-sm-4 mb-2">
+                        <div class="form-group">
+                            <label class="form-label">نام فارسی مشخصه*</label>
+                            <input type="text" class="form-control" name="perName" value="{{ feature.perName }}"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 mb-2">
+                        <div class="form-group">
+                            <label class="form-label">نام انگلیسی مشخصه*</label>
+                            <input type="text" class="form-control" name="engName" value="{{ feature.engName }}"
+                                   dir="ltr"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 mb-2">
+                        <div class="form-group">
+                            <label class="form-label">حالت نمایش</label>
+                            <select name="visibility" class="form-select" id="">
+                                <option value="1" {% if feature.visibility %} selected {% endif %}>نمایش به کاربر
+                                </option>
+                                <option value="0" {% if not feature.visibility %} selected {% endif %}>عدم نمایش به
+                                    کاربر
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- <div class="col-sm-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">اولویت نمایش به کاربر</label>
+                        <input type="number" class="form-control" name="priority" value="{{ feature.priority }}" min="0"
+                            value="0">
+                    </div>
+                </div> -->
+                </div>
+
+                <div class="row mt-2">
+                    <div style="text-align: left;">
+                        <button type="submit" name="profile" class="btn btn-label-primary mt-1">ویرایش</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        <div class="table-responsive mt-2">
+            <table class="table text-center">
+                <thead>
+                <tr>
+                    <th>نام محصول</th>
+                    <th>مقدار مشخصه</th>
+                    <th>کد مشخصه</th>
+                    <!-- <th>اولویت</th> -->
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in feature.featurevalues.all %}
+                    <tr>
+                        <td>
+                            <select class="form-select" id="product_{{ i.id }}">
+                                {% for product in products %}
+                                    <option value="{{ product.id }}" {% for p in i.productfeaturevalue_set.all %}
+                                        {% if p.product.id == product.id %} selected {% endif %} {% endfor %}>
+                                        {{ product.perName }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" value="{{ i.name }}" id="name_{{ i.id }}">
+                        </td>
+                        <td><input type="text" class="form-control" value="{{ i.code }}" id="code_{{ i.id }}">
+                        </td>
+                        <!-- <td><input type="number" class="form-control" {% for p in i.productfeaturevalue_set.all %}
+                            {% if p.featurevalue.id == i.id %} value="{{ p.priority }}" {% endif %} {% endfor %}
+                            id="priority_{{ i.id }}">
+                    </td> -->
+                        <td>
+                            <a href="#" class="btn btn-icon rounded-pill btn-label-success featureValueEditBtn"
+                               data-id="{{ i.id }}">
+                                <i class="bx bx-edit-alt"></i>
+                            </a>
+                            <a href="#" class="btn btn-icon rounded-pill btn-label-danger">
+                                <i class="bx bx-x"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex m-4 justify-content-end">
+            <button type="button" data-bs-toggle="modal" data-bs-target="#createFeatureValue"
+                    class="btn btn-label-success mt-1">افزودن
+            </button>
+            <div class="modal fade" id="createFeatureValue" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'feature_value_add' feature.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="modal-body">
+
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="nameWithTitle" class="form-label text-start d-flex">نام
+                                            محصول</label>
+                                        <select class="form-select" name="product" id="product_{{ i.id }}">
+                                            {% for product in products %}
+                                                <option value="{{ product.id }}">
+                                                    {{ product.perName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="nameWithTitle" class="form-label text-start d-flex">نام
+                                            مشخصه</label>
+                                        <input type="text" id="nameWithTitle" name="featureValueName"
+                                               class="form-control"
+                                               placeholder="نام را وارد کنید">
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col mb-0">
+                                        <label for="emailWithTitle" class="form-label text-start d-flex">کد
+                                            مشخصه</label>
+                                        <input type="text" id="emailWithTitle" name="featureValueCode"
+                                               class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">ایجاد</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}

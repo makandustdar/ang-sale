@@ -1,0 +1,293 @@
+{% extends '../base.html' %}
+{% load crispy_forms_filters %}
+
+{% load static %}
+{% load jalali_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %}ویرایش مشتری{% endblock title %}
+
+{% block content %}
+    <style>
+        label {
+            font-size: 0.75rem;
+        }
+    </style>
+
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'users_list' %}">لیست کاربران</a>
+                    </li>
+                    <li class="breadcrumb-item active">ویرایش کاربر</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% else %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+
+            <form class="form-horizontal error" method="post" autocomplete="off" id="privateForm"
+                  style="{% if profile.role == '2' %}display: none;{% endif %}">
+                {% csrf_token %}
+                <input type="hidden" name="expert" class="expert_input">
+                <div class="row mb-2">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">کاربر</label>
+                        <select class="form-select" name="user_type" id="user_type_select_p">
+                            <option value="1" selected="selected">حقیقی</option>
+                            <option value="2">حقوقی</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">کارشناس</label>
+                        <select class="form-select" name="expert" id="expert_select">
+                            <option value="">لطفا انتخاب کنید</option>
+                            {% for expert in experts %}
+                                <option value="{{ expert.id }}"
+                                        {% if profile.expert.id == expert.id %}selected{% endif %}>{{ expert.user.first_name }}
+                                    {{ expert.user.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <fieldset>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="form-group">
+                                {{ p_form.fname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-group">
+                                {{ p_form.lname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">شماره همراه*</label>
+                            <input type="text" class="form-control" name="mobile" value="{{ profile.mobile }}" id="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group">
+                                {{ p_form.id_code|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <!-- Datetime Picker-->
+                            <label for="flatpickr-datetime1" class="form-label">تاریخ تولد</label>
+                            <input type="text" class="form-control" value="{{ profile.birth_date }}"
+                                   placeholder="YYYY/MM/DD" id="flatpickr-datetime1"
+                                   name="birth_date">
+                            <!-- /Datetime Picker-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">استان*</label>
+                            <select name="state" id="id_state" class="form-select state_select" data-id="1" required>
+                                <option value="">--------</option>
+                                {% for state in states %}
+                                    <option value="{{ state.state_id }}"
+                                            {% if profile.state.id == state.id %}selected{% endif %}>{{ state.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">شهر*</label>
+                            <select name="city" id="id_city_1" class="form-select"
+                                    data-selected="{{ profile.city }}" required>
+                                <option value="">--------</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">کدپستی</label>
+                            <input type="text" class="form-control" value="{{ profile.zipcode }}" name="zipcode">
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">آدرس</label>
+                            <textarea name="address" class="form-control" cols="30"
+                                      rows="1">{{ profile.address }}</textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="submit" name="private" class="btn btn-label-primary mt-1">ثبت</button>
+                    </div>
+                </div>
+            </form>
+
+            <form method="post" autocomplete="off" id="legalForm"
+                  style="{% if profile.role == '1' %}display: none;{% endif %}">
+                {% csrf_token %}
+                <input type="hidden" name="expert" class="expert_input">
+                <div class="row mb-2">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">کاربر</label>
+                        <select class="form-select" name="user_type" id="user_type_select_l">
+                            <option value="1">حقیقی</option>
+                            <option value="2" selected="selected">حقوقی</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">کارشناس</label>
+                        <select class="form-select" name="expert" id="expert_select">
+                            <option value="">لطفا انتخاب کنید</option>
+                            {% for expert in experts %}
+                                <option value="{{ expert.id }}"
+                                        {% if profile.expert.id == expert.id %}selected{% endif %}>{{ expert.user.first_name }}
+                                    {{ expert.user.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <fieldset>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.fname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.lname|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">شماره همراه*</label>
+                            <input type="text" class="form-control" value="{{ profile.mobile }}" name="mobile" id="">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <!-- Datetime Picker-->
+                            <label for="flatpickr-datetime2" class="form-label">تاریخ تولد</label>
+                            <input type="text" class="form-control" value="{{ profile.birth_date }}"
+                                   placeholder="YYYY/MM/DD" id="flatpickr-datetime2"
+                                   name="birth_date">
+                            <!-- /Datetime Picker-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.company_name|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.id_code|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.finance_code|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="form-group">
+                                {{ l_form.phone|as_crispy_field }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">استان*</label>
+                            <select name="state" id="id_state" class="form-select state_select" data-id="2" required>
+                                <option value="">--------</option>
+                                {% for state in states %}
+                                    <option value="{{ state.state_id }}"
+                                            {% if profile.state.id == state.id %}selected{% endif %}>{{ state.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">شهر*</label>
+                            <select name="city" id="id_city_2" class="form-select" data-selected="{{ profile.city }}"
+                                    required>
+                                <option value="">--------</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">کدپستی</label>
+                            <input type="text" class="form-control" value="{{ profile.zipcode }}" name="zipcode">
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">آدرس</label>
+                            <textarea name="address" class="form-control" cols="30" rows="1">
+                                {{ profile.address }}
+                                            </textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="submit" name="legal" class="btn btn-label-primary mt-1">ثبت</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        user_type_select_p = document.querySelector('#user_type_select_p')
+        user_type_select_l = document.querySelector('#user_type_select_l')
+
+        if (user_type_select_p) {
+            user_type_select_p.addEventListener('change', function () {
+                if (user_type_select_p.value === '1') {
+                    user_type_select_p.value = '1'
+                    user_type_select_l.value = '1'
+                    document.querySelector('#privateForm').style.display = 'block'
+                    document.querySelector('#legalForm').style.display = 'none'
+                } else if (user_type_select_p.value === '2') {
+                    user_type_select_p.value = '2'
+                    user_type_select_l.value = '2'
+                    document.querySelector('#privateForm').style.display = 'none'
+                    document.querySelector('#legalForm').style.display = 'block'
+                }
+            })
+        }
+        if (user_type_select_l) {
+            user_type_select_l.addEventListener('change', function () {
+                console.log(user_type_select_l.value, ' value l')
+
+                if (user_type_select_l.value === '1') {
+                    user_type_select_l.value = '1'
+                    user_type_select_p.value = '1'
+                    document.querySelector('#privateForm').style.display = 'block'
+                    document.querySelector('#legalForm').style.display = 'none'
+                } else if (user_type_select_l.value === '2') {
+                    user_type_select_l.value = '2'
+                    user_type_select_p.value = '2'
+                    document.querySelector('#privateForm').style.display = 'none'
+                    document.querySelector('#legalForm').style.display = 'block'
+                }
+            })
+        }
+
+    </script>
+    <script>
+        expert_select = document.querySelector('#expert_select')
+        if (expert_select) {
+            expert_select.addEventListener('change', function () {
+                document.querySelectorAll('.expert_input').forEach(input => {
+                    input.value = expert_select.value;
+                })
+            })
+        }
+    </script>
+{% endblock content %}

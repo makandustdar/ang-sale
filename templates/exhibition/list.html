@@ -1,0 +1,118 @@
+{% extends './base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="content-header row">
+        <div class="content-header-left col-12 mb-2 mt-1">
+            <div class="row breadcrumbs-top">
+                <div class="col-12">
+                    <h5 class="content-header-title float-left pr-1">لیست کاربران</h5>
+                    <div class="breadcrumb-wrapper">
+                        <ol class="breadcrumb p-0 mb-0">
+                            <!-- <li class="breadcrumb-item"><a href="{% url 'users_list' %}">مشتریان</a></li> -->
+                            <li class="breadcrumb-item active">لیست کاربران</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <div class="card">
+            <div class="card-header">لیست کاربران</div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="card">
+                        <div class="card-content">
+                            {% for message in messages %}
+                                {% if message.tags == 'error' %}
+                                    <div class="alert bg-rgba-danger alert-dismissible" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="بستن">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                        {{ message }}
+                                    </div>
+                                {% else %}
+                                    <div class="alert bg-rgba-{{ message.tags }} alert-dismissible" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="بستن">
+                                            <span aria-hidden="true">×</span>
+                                        </button>
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            <div class="card-body">
+                                <div class="table-responsive mt-5">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>نام و نام خانوادگی</th>
+                                            <th>کدملی</th>
+                                            <th>شماره همراه</th>
+                                            <th>تلفن ثابت</th>
+                                            <th>ویرایش</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for user in users %}
+                                            <tr>
+                                                <td>{{ user }}</td>
+                                                <td>{{ user.id_code }}</td>
+                                                <td>{{ user.mobile }}</td>
+                                                <td>{{ user.phone }}</td>
+                                                <td>
+                                                    <a href="{% url 'exhibition_edit' user.id %}">
+                                                        <i
+                                                                class="badge-circle badge-circle-light-primary bx bx-edit font-medium-1 mb-50"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="pagination justify-content-center">
+                                        {% if is_paginated %}
+                                            <div class="card-footer">
+                                                <div style="text-align: center;">
+
+                                                    {% if page_obj.has_previous %}
+                                                        <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                                           data-num="1">اولین صفحه</a>
+                                                        <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                                           data-num="{{ page_obj.previous_page_number }}">قبلی</a>
+                                                    {% endif %}
+
+                                                    {% for num in page_obj.paginator.page_range %}
+                                                        {% if page_obj.number == num %}
+                                                            <a class="btn btn-primary btn-sm  paging" href="#"
+                                                               data-num="{{ num }}">{{ num }}</a>
+                                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                                            <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                                               data-num="{{ num }}">{{ num }}</a>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if page_obj.has_next %}
+                                                        <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                                           data-num="{{ page_obj.next_page_number }}">بعدی</a>
+                                                        <a class="btn btn-outline-primary btn-sm  paging" href="#"
+                                                           data-num="{{ page_obj.paginator.num_pages }}">
+                                                            آخرین صفحه</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

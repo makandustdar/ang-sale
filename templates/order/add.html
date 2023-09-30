@@ -1,0 +1,133 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block title %}ایجاد سفارش{% endblock title %}
+
+{% block content %}
+<style>
+    .order-product-list {
+        display: flex;
+        list-style: none;
+        padding-bottom: 15px;
+    }
+
+    .order-product-list:not(:last-child) {
+        border-bottom: 1px solid #d4d8dd;
+    }
+
+    .order-product-list li {
+        margin-left: 1rem;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item">
+                    {% if request.user.is_superuser %}
+                    <a href="{% url 'admin_order_list' %}">لیست سفارشات</a>
+                    {% else %}
+                    <a href="{% url 'order_list' %}">لیست سفارشات</a>
+                    {% endif %}
+                </li>
+                <li class="breadcrumb-item active">ثبت سفارش</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card-body">
+        <form class="form-horizontal error" method="post" action="{% url 'order_add' %}">
+            {% csrf_token %}
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md mb-4">
+                    <div class="form-check custom-option custom-option-icon">
+                        <label class="form-check-label custom-option-content" for="productRadio{{ product.id }}">
+                            <span class="custom-option-body">
+                                <i class="bx bx-rocket"></i>
+                                <span class="custom-option-title mt-2">{{ product.perName }}</span>
+                            </span>
+                            <input name="product" class="form-check-input productRadioBtn" type="radio"
+                                value="{{ product.id }}" id="productRadio{{ product.id }}">
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="row" id="feature_div"></div>
+
+            <div class="row mt-4">
+                <div class="col-12" style="text-align: left;">
+                    <button type="submit" class="btn btn-label-primary mt-1">افزودن</button>
+                </div>
+            </div>
+        </form>
+
+        {% if items %}
+        {% regroup items by productName as product_list  %}
+        {% for productName in product_list %}
+        <div class="card my-3">
+            <h5 class="card-header">{{ productName.grouper }}</h5>
+            {% for item in productName.list %}
+            <ul class="order-product-list">
+                {% if item.color %}
+                <li>
+                    <label class="form-label">رنگ</label>
+                    <select class="form-select" id="color_{{ item.id }}">
+                        {% for i in item.product.productcolor_set.all %}
+                        <option value="{{ i.color.id }}" {% if i.color.id == item.color.id %} selected {% endif %}>
+                            {{ i.color.name }}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+                {% endif %}
+                {% for i in item.orderitemdetail_set.all|dictsort:'id' %}
+                <li>
+                    <label class="form-label">{{ i.featureName }}</label>
+                    <select class="form-select featureValueSelect_{{ item.id }}">
+                        {% for j in item.product.productfeaturevalue_set.all %}
+                        {% if i.feature.id == j.featurevalue.feature.id %}
+                        <option value="{{ i.id }}|{{ j.featurevalue.feature.id }}|{{ j.featurevalue.id }}"
+                            {% if i.featureValue.id == j.featurevalue.id %} selected {% endif %}>
+                            {{ j.featurevalue.name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </li>
+                {% endfor %}
+                <li>
+                    <label class="form-label">تعداد</label>
+                    <input type="number" class="form-control" name="quantity" value="{{ item.quantity }}"
+                        id="quantity_{{ item.id }}">
+                </li>
+                <li>
+                    <a href="#" class="btn btn-icon rounded-pill btn-label-success mt-4 preOrderEditBtn"
+                        data-id="{{ item.id }}">
+                        <i class="bx bx-edit-alt"></i>
+                    </a>
+                    <a href="#" class="btn btn-icon rounded-pill btn-label-danger mt-4 preOrderDeleteBtn"
+                        data-id="{{ item.id }}">
+                        <i class="bx bx-x"></i>
+                    </a>
+                </li>
+            </ul>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="row mt-4">
+            <div class="col-12" style="text-align: left;">
+                <button type="button" class="btn btn-label-danger mt-1 adminCompleteOrder" data-orderId="{{ order.id }}"
+                    data-action="cancel">لغو سفارش</button>
+                <button type="button" class="btn btn-primary mt-1 adminCompleteOrder" data-orderId="{{ order.id }}"
+                    data-action="register">تکمیل سفارش</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

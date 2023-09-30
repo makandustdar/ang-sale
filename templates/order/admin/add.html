@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load jalali_tags %}
+{% load order_tags %}
+
+{% load static %}
+
+{% block title %}ایجاد سفارش{% endblock title %}
+
+{% block content %}
+
+    <style>
+        .order-product-list {
+            display: flex;
+            list-style: none;
+            padding-bottom: 15px;
+        }
+
+        .order-product-list:not(:last-child) {
+            border-bottom: 1px solid #d4d8dd;
+        }
+
+        .order-product-list li {
+            margin-left: 1rem;
+        }
+    </style>
+
+
+    <script>
+        let b = null;
+
+        function toggleEditClicked(item_id) {
+            const options = document.getElementById(`editPreOrderItems_${item_id}`)
+            const table = document.getElementById(`tablePreOrder_${item_id}`)
+            const submitbtn = document.getElementById(`submitBTN_${item_id}`)
+            if (table.classList.contains('d-none')) {
+                table.classList.remove('d-none')
+                options.classList.add('d-none')
+                submitbtn.classList.add('d-none')
+            } else if (options.classList.contains('d-none')) {
+                options.classList.remove('d-none')
+                table.classList.add('d-none')
+                submitbtn.classList.remove('d-none')
+            }
+        }
+    </script>
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+    <div class="card">
+        <div class="card-header">
+            <nav aria-label="breadcrumb" class="d-flex justify-content-between">
+                <ol class="breadcrumb breadcrumb-style1">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'admin_order_list' %}">لیست سفارشات</a>
+                        {% else %}
+                            <a href="{% url 'order_list' %}">لیست سفارشات</a>
+                        {% endif %}
+                    </li>
+                    <li class="breadcrumb-item active">ثبت سفارش</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal error" method="post" action="{% url 'admin_order_add' %}">
+                {% csrf_token %}
+                <div class="row">
+                    {% for product in products %}
+                        <div class="col-md mb-md-0 mb-2 mt-3">
+                            <div class="form-check custom-option custom-option-image custom-option-image-radio border-0">
+                                <label class="form-check-label custom-option-content mb-0"
+                                       for="productRadio{{ product.id }}">
+                              <span class="custom-option-body">
+                                  <p class="custom-option-title mb-0 py-5 text-center fs-3 bg-secondary text-white rounded-3">{{ product.perName }}</p>
+                              </span>
+                                </label>
+                                <input name="product" class="form-check-input productRadioBtn" type="radio"
+                                       value="{{ product.id }}" id="productRadio{{ product.id }}">
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="col-sm-12 mb-2 d-flex justify-content-between">
+                        <div class="form-group mb-3 col-5">
+                            <label class="form-label">نام مشتری</label>
+                            <select name="customer" id="userSelect" class="select2 form-select">
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {% if order.user.id == user.id %}
+                                            selected {% endif %}>
+                                        {{ user.profile.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if request.user.is_superuser %}
+                            <dl class="d-flex gap-4 position-absolute top-0 end-0 me-4">
+                                <div>
+                                    <dt class="mb-2 mb-sm-0 pt-1">
+                                        <span class="fw-normal form-label">شماره صورتحساب</span>
+                                    </dt>
+                                    <dd class="d-flex">
+                                        <div class="">
+                                            <input type="text" class="form-control" name="transId" placeholder="#"
+                                                   value="{{ order.transId }}" data-value="{{ order.id }}"
+                                                   id="invoiceId" required>
+                                        </div>
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt class=" mb-2 mb-sm-0 pt-1">
+                                        <span class="fw-normal form-label">تاریخ صدور</span>
+                                    </dt>
+                                    <dd class="d-flex">
+                                        <div class="">
+                                            <input type="text" class="form-control"
+                                                   data-value="{{ order.order_date }}"
+                                                   value="{{ order.order_date }}"
+                                                   placeholder="YYYY/MM/DD" id="flatpickr-datetime1"
+                                                   name="creation_date" required>
+                                        </div>
+                                    </dd>
+                                </div>
+                            </dl>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row" id="feature_div"></div>
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="submit" class="btn btn-label-primary mt-1" id="addItemBtn">افزودن</button>
+                    </div>
+                </div>
+            </form>
+            <hr class="text-black-50">
+            <form action="{% url 'create_order_from_id' %}" method="post">
+                {% csrf_token %}
+                            <p>ساخت آیتم طبق شماره آیتم</p>
+
+                <div class="form-group mb-3 col-5">
+                    <label class="form-label">نام مشتری</label>
+                    <select name="customer" id="userSelect" class="select2 form-select">
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {% if order.user.id == user.id %}
+                                    selected {% endif %}>
+                                {{ user.profile.get_full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mb-3 col-5">
+                    <label class="form-label" for="">شماره فاکتور</label>
+                    <input type="text" class="form-control" name="order_raw_id">
+                </div>
+                <div class="col-12" style="text-align: left;">
+                    <button class="btn btn-label-primary mt-1">ثبت</button>
+                </div>
+            </form>
+            <small class="text-muted">جهت تغییر گزینه های غیرفعال، آیتم جدید بسازید و آیتم قدیمی را حذف کنید</small>
+            {% if items %}
+                {% regroup items by productName as product_list %}
+                <div class="row mb-5">
+                    {% for productName in product_list %}
+                        {% with forloop.counter as outercounter %}
+                            <div class="card my-3 col-12">
+                                <h5 class="card-header">{{ productName.grouper }}</h5>
+                                {% for item in productName.list %}
+                                    <form action="{% url "update_fee_or_quantity" item.id %}" method="post">
+                                        {% csrf_token %}
+                                        <ul class="order-product-list">
+                                            <li>
+                                                <label for="">ردیف</label>
+                                                <p class="fs-4">
+                                                    {{ forloop.counter }}
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <label for="">عکس رنگ</label>
+
+                                                <img src="" alt="" class="w-px-40"
+                                                     style="border: 1px solid #eee; border-radius: 100%; "
+                                                     id="colorimage"></li>
+                                            <li>
+                                                <label class="form-label">رنگ</label>
+                                                <select name="color" class="form-select"
+                                                        onchange="getColorImage(this)"
+                                                        id="color_{{ item.id }}">
+                                                    {% for i in item.product.productcolor_set.all %}
+                                                        <option value="{{ i.color.id }}"
+                                                                {% if i.color.id == item.color.id %}
+                                                                selected {% endif %}>
+                                                            {{ i.color.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </li>
+                                            {% for i in item.orderitemdetail_set.all|dictsort:'id' %}
+                                                <li>
+                                                    <label class="form-label">{{ i.featureName }}</label>
+                                                    <select
+                                                            class="form-select featureValueSelect_{{ item.id }}">
+                                                        {% for j in item.product.productfeaturevalue_set.all %}
+                                                            {% if i.feature.id == j.featurevalue.feature.id %}
+                                                                <option value="{{ i.id }}|{{ j.featurevalue.feature.id }}|{{ j.featurevalue.id }}"
+                                                                        {% if i.featureValue.id == j.featurevalue.id %}
+                                                                        selected {% endif %}>
+                                                                    {{ j.featurevalue.name }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                </li>
+                                            {% endfor %}
+                                            <li>
+                                                <label class="form-label">تعداد</label>
+                                                <input type="number" class="form-control" name="quantity"
+                                                       value="{{ item.quantity }}"
+                                                       id="quantity_{{ item.id }}">
+                                            </li>
+                                            {% if request.user.if_staff or request.user.is_superuser %}
+                                                <li>
+                                                    <label for="order_item_fee">
+                                                        فی:
+                                                    </label>
+                                                    <input class="form-control order_item_fee_cl"
+                                                           onchange="addCommas(this.value)"
+                                                           value="{{ item.fee }}"
+                                                           type="text"
+                                                           id='order_item_fee_{{ item.id }}'
+                                                           name="fee">
+                                                </li>
+                                            {% endif %}
+
+                                            <li>
+                                                <button
+                                                        type="button"
+                                                        data-id="{{ item.id }}"
+                                                        class="btn btn-icon w-100 p-3 btn-label-primary mt-4 preOrderEditBtn">
+                                                    ذخیره
+                                                </button>
+                                            </li>
+                                            <li class="">
+                                                <a href="#"
+                                                   class="btn btn-icon btn-label-danger mt-4 preOrderDeleteBtn"
+                                                   data-id="{{ item.id }}">
+                                                    <i class="bx bx-x"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </form>
+                                {% endfor %}
+                            </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12" style="text-align: left;">
+                        <button type="button" class="btn btn-label-danger mt-1 adminCompleteOrder"
+                                data-orderId="{{ order.id }}"
+                                data-action="cancel">لغو سفارش
+                        </button>
+                        <a href="{% url 'set_order_price' %}" type="button"
+                           class="btn btn-label-primary mt-1 adminCompleteOrder">مرحله بعد
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        let order_fees = document.getElementsByClassName("order_item_fee_cl")
+
+        function updateTextView(_obj) {
+            const num = getNumber(_obj.value);
+            if (num === 0) {
+                _obj.value = '';
+            } else {
+                _obj.value = num.toLocaleString();
+            }
+        }
+
+        function getNumber(_str) {
+            const arr = _str.split('');
+            const out = new Array();
+            for (let cnt = 0; cnt < arr.length; cnt++) {
+                if (isNaN(arr[cnt]) === false) {
+                    out.push(arr[cnt]);
+                }
+            }
+            return Number(out.join(''));
+        }
+
+        for (let i = 0; i < order_fees.length; i++) {
+            if (order_fees[i].value) {
+                updateTextView(order_fees[i])
+            }
+            order_fees[i].addEventListener('keyup', function () {
+                updateTextView(order_fees[i])
+            })
+        }
+
+        async function getColorImage(item) {
+            console.log(item.value)
+            const response = await fetch(`/fetch/getcolorimage/?colorId=${item.value}`)
+            data = await response.json()
+            const colorimage = document.getElementById('colorimage')
+            colorimage.src = data['color_image']
+            console.log(data)
+        }
+
+    </script>
+{% endblock content %}

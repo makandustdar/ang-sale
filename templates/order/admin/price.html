@@ -1,0 +1,297 @@
+{% extends '../../base.html' %}
+{% load order_tags %}
+{% load price_parser %}
+{% load static %}
+
+{% block title %}ثبت قیمت{% endblock title %}
+
+{% block content %}
+
+    <style>
+        .order-product-list {
+            display: flex;
+            list-style: none;
+            padding-bottom: 15px;
+        }
+
+        .order-product-list:not(:last-child) {
+            border-bottom: 1px solid #d4d8dd;
+        }
+
+        .order-product-list li {
+            margin-left: 1rem;
+        }
+    </style>
+
+
+    <script>
+        let b = null;
+
+        function toggleEditClicked(item_id) {
+            const options = document.getElementById(`editPreOrderItems_${item_id}`)
+            const table = document.getElementById(`tablePreOrder_${item_id}`)
+            const submitbtn = document.getElementById(`submitBTN_${item_id}`)
+            if (table.classList.contains('d-none')) {
+                table.classList.remove('d-none')
+                options.classList.add('d-none')
+                submitbtn.classList.add('d-none')
+            } else if (options.classList.contains('d-none')) {
+                options.classList.remove('d-none')
+                table.classList.add('d-none')
+                submitbtn.classList.remove('d-none')
+            }
+        }
+    </script>
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+    {% endfor %}
+    <div class="row invoice-edit">
+        <!-- Invoice Edit-->
+        <div class="card-header">
+            <nav aria-label="breadcrumb" class="d-flex justify-content-between">
+                <ol class="breadcrumb breadcrumb-style1 m-0 align-content-center">
+                    <li class="breadcrumb-item">
+                        <a href="#">خانه</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'admin_order_list' %}">لیست سفارشات</a>
+                        {% else %}
+                            <a href="{% url 'order_list' %}">لیست سفارشات</a>
+                        {% endif %}
+                    </li>
+                    <li class="breadcrumb-item active">ثبت قیمت</li>
+                </ol>
+                <button class="btn btn-danger bg-label-danger border-0 ">
+                    <a href="{% url 'admin_order_add' %}" class="text-danger">مرحله
+                        قبل</a>
+                </button>
+            </nav>
+        </div>
+        <div class="col-lg-9 col-12 mb-lg-0 mb-4">
+            <div class="card invoice-preview-card">
+                <div class="card-body">
+
+                    <div class="row p-sm-3 p-0">
+                        <h5>اطلاعات مشتری</h5>
+                        <div class="col-md-12 col-sm-12 col-12 mb-sm-0 mb-4">
+                            <p class="mb-1">
+                                {% if customer.profile.private %}
+                                    <a href="{% url 'profile' customer.profile.id %}">{{ customer.profile.private }}</a>
+                                {% elif customer.profile.legal %}
+                                    <a href="{% url 'profile' customer.profile.id %}">{{ customer.profile.legal }}</a>
+                                {% endif %}
+                            </p>
+                            <p class="mb-1">{{ customer.profile.address }}</p>
+                            <p class="mb-1">{{ customer.profile.mobile }}</p>
+                            <p class="mb-0">{{ customer.email }}</p>
+                        </div>
+
+                    </div>
+                    <hr class="mx-n4">
+                    <div class="table-responsive text-nowrap">
+                        {% for item in items %}
+                            <p>
+                                <span>
+                                    {{ item.productName }}
+                                </span>
+                                | رنگ: {{ item.colorName }}
+                                {% for orderitemdetail in  item.orderitemdetail_set.all %}
+                                    | {{ orderitemdetail.featureName }}: {{ orderitemdetail.featureValue }}
+                                {% endfor %}
+                                | تعداد: {{ item.quantity }}
+                                | فی: {{ item.fee }}
+                            </p>
+                            <form action="{% url 'change_items_price' %}" method="post" class="d-flex gap-2 justify-content-around">
+                            {% csrf_token %}
+                                <input type="hidden" value="{{ item.id }}" name="item_id">
+                                <div class="col-3">
+                                    <label for="order_item_fee">
+                                        تغییر قیمت:
+                                    </label>
+                                    <select name="changepricetype" class="form-select" id="">
+                                        <option value="OA">تخفیف قیمتی</option>
+                                        <option value="OP">تخفیف درصدی</option>
+                                        <option value="IA">افزایش قیمتی</option>
+                                        <option value="IP">افزایش درصدی</option>
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <label for="order_item_fee">
+                                        مقدار:
+                                    </label>
+                                    <input type="number" name="amount" class="form-control">
+                                </div>
+                                <div class="col-1 d-flex mt-auto">
+                                    <button type="submit" class="btn btn-label-facebook">
+                                        اعمال
+                                    </button>
+                                </div>
+                                <div class="col-3">
+                                    <label for="">
+                                        مبلغ نهایی آیتم:
+                                    </label>
+                                    <input type="text" class="form-control" value={% widthratio item.fee 1 item.quantity %} disabled>
+                                </div>
+                            </form>
+                            <hr>
+                        {% endfor %}
+                    </div>
+                    <hr class="mx-n4">
+
+                    <div class="row py-sm-3">
+                        <div class="col-md-8 mb-md-0 mb-3">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <div class="d-flex align-items-center mb-3">
+                                    <label for="off_percent" class="form-label w-25 fs-6">درصد تخفیف:</label>
+                                    <input type="number" name="off_percent" max="100" class="form-control w-75"
+                                           id="off_percent"
+                                           placeholder=""
+                                           value="{{ off_percent }}">
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <label for="price_percent" class="form-label w-25 fs-6">درصد افزایش:</label>
+                                    <input type="number" name="price_percent" max="100" class="form-control w-75"
+                                           id="price_percent"
+                                           placeholder=""
+                                           value="{{ price_percent }}">
+                                </div>
+                                <hr>
+                                <div class="d-flex align-items-center mb-3">
+                                    <label for="off_price" class="form-label w-25 fs-6">قیمت تخفیف:</label>
+                                    <input type="text" name="off_price" class="form-control w-75" id="off_price"
+                                           placeholder=""
+                                           value="{{ off_price }}">
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <label for="price_price" class="form-label w-25 fs-6">قیمت افزایش:</label>
+                                    <input type="text" name="price_price" class="form-control w-75" id="price_price"
+                                           placeholder=""
+                                           value="{{ price_price }}">
+                                </div>
+                                <hr>
+                                <div class="d-flex align-items-center mb-3 gap-3">
+                                    <label for="includes_tax" class="form-label fs-6">فاکتور رسمی:</label>
+                                    <input class="checkbox-row" id="includes_tax" type="checkbox"
+                                           name="tax_checkbox">
+                                </div>
+                                <button type="submit" class="btn btn-primary">اعمال</button>
+                            </form>
+                        </div>
+                        <div class="col-md-4 d-flex justify-content-end">
+                            <div class="invoice-calculations lh-2">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">جمع جزء:</span>
+                                    <span class="fw-semibold">{{ total_price }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">تعداد آیتم ها:</span>
+                                    <span class="fw-semibold">{{ order_quantity }}</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">تخفیف:</span>
+                                    <span class="fw-semibold">{{ discount_price }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">افزایش:</span>
+                                    <span class="fw-semibold">{{ increase_price_by }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">مالیات:</span>
+                                    {# TODO calculate tax by 9% if includes_tax checked #}
+                                    <span class="fw-semibold">{{ tax }}</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <span class="w-px-100">جمع کل:</span>
+                                    <span class="fw-semibold">{{ final_price }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /Invoice Edit-->
+
+        <!-- Invoice Actions -->
+        <div class="col-lg-3 col-12 invoice-actions">
+            <form action="{% url 'submit_order' %}" method="post">
+                {% csrf_token %}
+                <div>
+                    <p class="mb-2">پذیرش پرداخت از طریق</p>
+                    <select id="payment_type" name="payment_type" onchange="change_payment()" class="form-select mb-4">
+                        <option value="">نوع پرداخت</option>
+                        <option value="cash">نقد</option>
+                        <option value="check">چک</option>
+                    </select>
+                    <div id="check_time" class="d-none">
+                        <div class="lh-1-85 mb-2">
+                            <label for="onemonthcheck">یک ماهه</label>
+                            <input type="checkbox" name="one_month" onclick="checkToggle('one')" id="onemonthcheck">
+                        </div>
+                        <div class="lh-1-85 mb-2">
+                            <label for="twomonthcheck">دو ماهه</label>
+                            <input type="checkbox" name="two_month" onclick="checkToggle('two')" id="twomonthcheck">
+                        </div>
+                        <div class="lh-1-85 mb-2">
+                            <label for="threemonthcheck">سه ماهه</label>
+                            <input type="checkbox" name="three_month" onclick="checkToggle('three')"
+                                   id="threemonthcheck">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="orderdescriptionid">توضیحات</label>
+                    <textarea class="form-control" name="orderdescription" id="orderdescriptionid" rows="5"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success mt-1 w-100 m-auto"
+                        data-orderId="{{ order.id }}"
+                        data-action="register">تکمیل سفارش
+                </button>
+            </form>
+        </div>
+        <!-- /Invoice Actions -->
+    </div>
+    <script>
+        one = document.getElementById('onemonthcheck')
+        two = document.getElementById('twomonthcheck')
+        three = document.getElementById('threemonthcheck')
+        container = document.getElementById('check_time')
+        paymeny_type = document.getElementById('payment_type')
+
+        function change_payment() {
+            let text = paymeny_type.options[paymeny_type.selectedIndex].text;
+            if (text === 'چک') {
+                container.classList.remove('d-none')
+            } else {
+                container.classList.add('d-none')
+            }
+        }
+
+        function checkToggle(type) {
+            if (type === 'one') {
+                one.checked = true
+                two.checked = false
+                three.checked = false
+            }
+            if (type === 'two') {
+                one.checked = false
+                two.checked = true
+                three.checked = false
+            }
+            if (type === 'three') {
+                one.checked = false
+                two.checked = false
+                three.checked = true
+            }
+        }
+    </script>
+
+{% endblock content %}

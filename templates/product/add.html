@@ -1,0 +1,68 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block title %}ایجاد محصول{% endblock title %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'product_list' %}">لیست محصولات</a>
+                </li>
+                <li class="breadcrumb-item active">افزودن محصول</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card-body">
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+        {% endfor %}
+
+        <form class="form" method="post" action="{% url 'product_add' %}">
+            {% csrf_token %}
+
+            <div class="row my-3">
+                <div class="col-sm-6 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">نام فارسی محصول*</label>
+                        <input type="text" class="form-control" name="perName" required>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">نام انگلیسی محصول*</label>
+                        <input type="text" class="form-control" name="engName" dir="ltr" required>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">رنگ محصول</label>
+                    <select class="select2 form-select" name="color" multiple>
+                        {% for color in colors %}
+                        <option value="{{ color.id }}">{{ color.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12" style="text-align: left;">
+                    <button type="submit" class="btn btn-label-primary mt-1">ثبت</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

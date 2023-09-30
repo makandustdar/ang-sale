@@ -1,0 +1,127 @@
+{% extends './base.html' %}
+
+{% load static %}
+{% load jalali_tags %}
+
+{% block title %}داشبورد{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12 col-md-12 col-lg-12 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <span class="d-block text-nowrap pt-1">سامانه ثبت سفارش محصولات گروه صنعتی ANG</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+  <div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="avatar mx-auto mb-2">
+          <span class="avatar-initial rounded-circle bg-label-info">
+            <i class="bx bx-user fs-4"></i>
+          </span>
+        </div>
+        <span class="d-block text-nowrap pt-1">مشتریان</span>
+        <h2 class="mb-n3">{{ users }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="avatar mx-auto mb-2">
+          <span class="avatar-initial rounded-circle bg-label-danger">
+            <i class="bx bx-shopping-bag fs-4"></i>
+          </span>
+        </div>
+        <span class="d-block text-nowrap pt-1">سفارش</span>
+        <h2 class="mb-n3">{{ orders|length }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="avatar mx-auto mb-2">
+          <span class="avatar-initial rounded-circle bg-label-success">
+            <i class="bx bx-message fs-4"></i>
+          </span>
+        </div>
+        <span class="d-block text-nowrap pt-1">پیام ها</span>
+        <h2 class="mb-n3">0</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100">
+      <div class="card-body text-center">
+        <div class="avatar mx-auto mb-2">
+          <span class="avatar-initial rounded-circle bg-label-warning">
+            <i class="bx bx-file fs-4"></i>
+          </span>
+        </div>
+        <span class="d-block text-nowrap pt-1">فایل های ضمیمه شده</span>
+        <h2 class="mb-n3">0</h2>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <h5 class="card-header">آخرین سفارشات</h5>
+      <div class="card-body">
+        <ul class="timeline mt-3">
+          {% for order in orders|slice:'4' %}
+          <li class="timeline-item timeline-item-transparent">
+            <span class="timeline-point 
+                      {% if order.completed and order.track == 'COMPLETE' %} timeline-point-success 
+                      {% elif order.completed and order.track == 'CANCEL' %} timeline-point-danger
+                      {% else %} timeline-point-primary {% endif %}"></span>
+            <div class="timeline-event">
+              <div class="timeline-header border-bottom mb-3">
+                <h6 class="mb-2">{{ order.user.profile.get_full_name }} - <span dir="ltr">#{{ order.transId }}</span>
+                </h6>
+                <small class="text-muted">{{ order.createdAt|to_jalali:'%y/%m/%d' }}</small>
+              </div>
+              <div class="d-flex justify-content-between flex-wrap mb-2">
+                <div>
+                  <span>وضعیت</span>
+                  <i class="bx bx-right-arrow-alt scaleX-n1-rtl mx-3"></i>
+                  <span class="badge 
+                              {% if order.track == 'COMEPLETE' %} bg-label-success
+                              {% elif order.track == 'CANCEL' %} bg-label-danger
+                              {% elif not order.track %} bg-label-warning
+                              {% else %} bg-label-primary
+                              {% endif %}">{{ order.get_track }}</span>
+                </div>
+              </div>
+              <div class="mb-2">
+                {% for item in order.orderitem_set.all %}
+                <span class="badge bg-label-dark">{{ item.productName }}</span>
+                {% endfor %}
+              </div>
+              <a href="{% url 'order_detail' order.id %}">
+                <i class="bx bx-link"></i>
+                مشاهده سفارش
+              </a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

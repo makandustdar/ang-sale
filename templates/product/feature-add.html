@@ -1,0 +1,128 @@
+{% extends '../base.html' %}
+
+{% load static %}
+
+{% block title %}ایجاد مشخصه محصول{% endblock title %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style1">
+                <li class="breadcrumb-item">
+                    <a href="#">خانه</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'product_list' %}">لیست محصولات</a>
+                </li>
+                <li class="breadcrumb-item active">افزودن مشخصه محصول</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card-body">
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% else %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endif %}
+        {% endfor %}
+
+        <form class="form repeater-default" method="post" action="{% url 'feature_add' %}">
+            {% csrf_token %}
+            <div class="row">
+                {% for product in products %}
+                <div class="col-md mb-md-0 mb-2">
+                    <div class="form-check custom-option custom-option-icon">
+                        <label class="form-check-label custom-option-content" for="productRadio{{ product.id }}">
+                            <span class="custom-option-body">
+                                <i class="bx bx-rocket"></i>
+                                <span class="custom-option-title mt-2">{{ product.perName }}</span>
+                            </span>
+                            <input name="product" class="form-check-input productRadio" type="radio"
+                                value="{{ product.id }}" id="productRadio{{ product.id }}" {% if forloop.first %}
+                                checked {% endif %}>
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="row my-3">
+                <div class="col-sm-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">نام فارسی مشخصه*</label>
+                        <!-- <input type="text" class="form-control" name="perName" required> -->
+                        <input id="TagifyPerFeatureName" name="perName" class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-sm-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">نام انگلیسی مشخصه*</label>
+                        <!-- <input type="text" class="form-control" name="engName" dir="ltr" required> -->
+                        <input id="TagifyEngFeatureName" name="engName" class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-sm-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">حالت نمایش</label>
+                        <select name="visibility" class="form-select" id="">
+                            <option value="1">نمایش به کاربر</option>
+                            <option value="0">عدم نمایش به کاربر</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">اولویت نمایش به کاربر</label>
+                        <input type="number" class="form-control" name="priority" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-repeater">
+                    <div data-repeater-list="group-a">
+                        <div data-repeater-item>
+                            <div class="row">
+                                <div class="col-sm-5 mb-2">
+                                    <label class="form-label">مقدار مشخصه*</label>
+                                    <input class="form-control" name="featureValue" placeholder="" required>
+                                </div>
+
+                                <div class="col-sm-5 mb-2">
+                                    <label class="form-label">کد مقدار مشخصه</label>
+                                    <input class="form-control" name="featureValueCode" placeholder="">
+                                </div>
+                                <div class="mb-3 col-lg-12 col-xl-2 col-12 d-flex align-items-center mb-0">
+                                    <button type="button" class="btn btn-label-danger mt-4" data-repeater-delete>
+                                        <i class="bx bx-x"></i>
+                                        <span class="align-middle">حذف</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-0">
+                        <button type="button" class="btn btn-primary" data-repeater-create>
+                            <i class="bx bx-plus"></i>
+                            <span class="align-middle">افزودن</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12" style="text-align: left;">
+                    <button type="submit" class="btn btn-label-primary mt-1">ثبت</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
