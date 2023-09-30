@@ -1,0 +1,11 @@
+{
+  "django": {
+    "collectStatic": true
+  },
+  "disks": [
+    {
+      "name": "media",
+      "mountTo": "media"
+
+  ]
+}
