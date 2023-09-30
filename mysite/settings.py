@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from celery.schedules import crontab
@@ -77,14 +78,14 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sale',
-        'USER': 'root',
-        'PASSWORD': 'xSE84TvrXOl8tVsePMXLIjKD',
-        'HOST': 'luca.iran.liara.ir',  # Or an IP Address that your DB is hosted on
-        'PORT': '31155',
+        'NAME': os.getenv('DB_NAME', 'sale'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'xSE84TvrXOl8tVsePMXLIjKD'),
+        'HOST': os.getenv('DB_HOST', 'ang-db'),
+        'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
-            "init_command": "SET foreign_key_checks = 0;",
-        },
+            'init_command': 'SET storage_engine=MyISAM',
+        }
     }
 }
 
