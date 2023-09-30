@@ -6,6 +6,6 @@
     {
       "name": "media",
       "mountTo": "media"
-
+    }
   ]
 }
