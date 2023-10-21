@@ -28,7 +28,6 @@
   content: " ";
   position: fixed;
   top: -100px;
-  background: url("../../../img/pages/auth-top-left.png");
   background-size: contain;
 }
 html:not([dir=rtl]) .authentication-wrapper.authentication-basic .authentication-inner:before {
@@ -44,7 +43,6 @@ html:not([dir=rtl]) .authentication-wrapper.authentication-basic .authentication
   content: " ";
   position: fixed;
   bottom: 0;
-  background-image: url("../../../img/pages/auth-right-bottom.png");
   background-size: contain;
 }
 html:not([dir=rtl]) .authentication-wrapper.authentication-basic .authentication-inner:after {
