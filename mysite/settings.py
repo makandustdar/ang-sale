@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+import django_heroku
+
 from celery.schedules import crontab
 
 # import base.tasks
@@ -189,3 +191,5 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CELERY_BROKER_URL = 'amqp://localhost'
+
+django_heroku.settings(locals())
